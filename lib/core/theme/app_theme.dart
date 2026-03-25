@@ -191,8 +191,9 @@ abstract final class AppTheme {
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected))
+          if (states.contains(WidgetState.selected)) {
             return AppColors.primaryLight;
+          }
           return AppColors.textMuted;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
