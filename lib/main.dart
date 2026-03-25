@@ -1,36 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'app/app.dart';
 
-void main() {
-  runApp(const MissingPersonsApp());
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MissingPersonsApp extends StatelessWidget {
-  const MissingPersonsApp({super.key});
+  // Lock to portrait
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Missing Persons',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
-      home: const PlaceholderHomePage(),
-    );
-  }
-}
+  // Status bar transparent
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
 
-class PlaceholderHomePage extends StatelessWidget {
-  const PlaceholderHomePage({super.key});
+  // Firebase — options will be added via flutterfire configure
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Missing Persons')),
-      body: const Center(
-        child: Text(
-          'Projeto inicializado com sucesso',
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
-    );
-  }
+  runApp(const App());
 }

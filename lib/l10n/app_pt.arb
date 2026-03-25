@@ -1,0 +1,92 @@
+{
+  "@@locale": "pt",
+
+  "appName": "Where Am I?",
+  "missingPersons": "Pessoas Desaparecidas",
+  "searchHint": "Buscar por nome ou local...",
+  "filterTitle": "Filtros",
+  "filterSex": "Sexo",
+  "filterAge": "Faixa etária",
+  "filterNationality": "Nacionalidade",
+  "filterLastSeen": "Último avistamento após",
+  "filterBirthYear": "Faixa de nascimento",
+  "filterSource": "Fonte",
+  "filterApply": "Aplicar filtros",
+  "filterClear": "Limpar",
+
+  "sexMale": "Masculino",
+  "sexFemale": "Feminino",
+  "sexUnknown": "Não informado",
+
+  "lastSeenLabel": "Último avistamento",
+  "ageLabel": "Idade",
+  "heightLabel": "Altura",
+  "nationalityLabel": "Nacionalidade",
+  "sexLabel": "Sexo",
+  "caseIdLabel": "ID do caso",
+  "sourceLabel": "Fonte",
+
+  "detailFacts": "Detalhes do caso",
+  "detailContacts": "Contatos",
+  "detailPhotos": "Fotos",
+
+  "shareCase": "Compartilhar este caso",
+  "reportCase": "Reportar pessoa desaparecida",
+
+  "sosTitle": "Emergência",
+  "sosCallEurope": "Ligar 112 (Europa)",
+  "sosDescription": "Se você tem informações sobre alguém desaparecido ou está em perigo, ligue imediatamente para a emergência.",
+
+  "loginTitle": "Entre para reportar",
+  "loginSubtitle": "É necessária uma conta para reportar um desaparecimento.",
+  "loginGoogle": "Entrar com Google",
+  "loginEmail": "Entrar com Email",
+
+  "reportTitle": "Reportar desaparecimento",
+  "reportName": "Nome completo",
+  "reportDOB": "Data de nascimento",
+  "reportLastSeen": "Data do último avistamento",
+  "reportLastLocation": "Último local conhecido",
+  "reportSex": "Sexo",
+  "reportHeight": "Altura (cm)",
+  "reportNationality": "Nacionalidade",
+  "reportFacts": "Detalhes adicionais",
+  "reportPhotos": "Adicionar fotos",
+  "reportSubmit": "Enviar relato",
+  "reportPendingNotice": "Seu relato será revisado antes da publicação.",
+
+  "statusPending": "Em revisão",
+  "statusApproved": "Caso ativo",
+  "statusResolved": "Resolvido",
+
+  "sourceInterpol": "INTERPOL",
+  "sourceCommunity": "Comunidade",
+
+  "settingsTitle": "Configurações",
+  "settingsLanguage": "Idioma",
+  "settingsAbout": "Sobre",
+  "settingsPrivacy": "Política de privacidade",
+
+  "errorNetwork": "Erro de rede. Verifique sua conexão.",
+  "errorServer": "Erro no servidor. Tente novamente.",
+  "errorNotFound": "Não encontrado.",
+  "errorGeneric": "Algo deu errado.",
+  "retryButton": "Tentar novamente",
+
+  "emptyListTitle": "Nenhum caso encontrado",
+  "emptyListSubtitle": "Tente ajustar os filtros.",
+
+  "loadingLabel": "Carregando...",
+  "yearsOld": "{age} anos",
+  "@yearsOld": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "cmHeight": "{cm} cm",
+  "@cmHeight": {
+    "placeholders": {
+      "cm": { "type": "int" }
+    }
+  }
+}

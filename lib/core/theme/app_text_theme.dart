@@ -1,0 +1,158 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'app_colors.dart';
+
+abstract final class AppTextTheme {
+  // Display — DM Serif Display (editorial, weight, authority)
+  static TextStyle get displayLarge => GoogleFonts.dmSerifDisplay(
+        fontSize: 48,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textPrimary,
+        letterSpacing: -1.0,
+        height: 1.1,
+      );
+
+  static TextStyle get displayMedium => GoogleFonts.dmSerifDisplay(
+        fontSize: 36,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textPrimary,
+        letterSpacing: -0.5,
+        height: 1.15,
+      );
+
+  static TextStyle get displaySmall => GoogleFonts.dmSerifDisplay(
+        fontSize: 28,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textPrimary,
+        letterSpacing: -0.3,
+        height: 1.2,
+      );
+
+  // Headings — DM Sans
+  static TextStyle get headlineLarge => GoogleFonts.dmSans(
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textPrimary,
+        letterSpacing: -0.5,
+      );
+
+  static TextStyle get headlineMedium => GoogleFonts.dmSans(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+        letterSpacing: -0.3,
+      );
+
+  static TextStyle get headlineSmall => GoogleFonts.dmSans(
+        fontSize: 17,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+        letterSpacing: -0.2,
+      );
+
+  // Title
+  static TextStyle get titleLarge => GoogleFonts.dmSans(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+        letterSpacing: -0.1,
+      );
+
+  static TextStyle get titleMedium => GoogleFonts.dmSans(
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textPrimary,
+      );
+
+  static TextStyle get titleSmall => GoogleFonts.dmSans(
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textSecondary,
+        letterSpacing: 0.1,
+      );
+
+  // Body
+  static TextStyle get bodyLarge => GoogleFonts.dmSans(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textPrimary,
+        height: 1.6,
+      );
+
+  static TextStyle get bodyMedium => GoogleFonts.dmSans(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textPrimary,
+        height: 1.55,
+      );
+
+  static TextStyle get bodySmall => GoogleFonts.dmSans(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textSecondary,
+        height: 1.5,
+      );
+
+  // Label
+  static TextStyle get labelLarge => GoogleFonts.dmSans(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+        letterSpacing: 0.5,
+      );
+
+  static TextStyle get labelMedium => GoogleFonts.dmSans(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textSecondary,
+        letterSpacing: 0.8,
+      );
+
+  static TextStyle get labelSmall => GoogleFonts.dmSans(
+        fontSize: 10,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textMuted,
+        letterSpacing: 1.0,
+      );
+
+  // Special
+  static TextStyle get overline => GoogleFonts.dmSans(
+        fontSize: 10,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textMuted,
+        letterSpacing: 2.0,
+      );
+
+  static TextStyle get caption => GoogleFonts.dmSans(
+        fontSize: 11,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textMuted,
+        height: 1.4,
+      );
+
+  static TextStyle get caseId => GoogleFonts.dmMono(
+        fontSize: 11,
+        fontWeight: FontWeight.w400,
+        color: AppColors.textMuted,
+        letterSpacing: 0.5,
+      );
+
+  // Build Flutter TextTheme
+  static TextTheme get textTheme => TextTheme(
+        displayLarge: displayLarge,
+        displayMedium: displayMedium,
+        displaySmall: displaySmall,
+        headlineLarge: headlineLarge,
+        headlineMedium: headlineMedium,
+        headlineSmall: headlineSmall,
+        titleLarge: titleLarge,
+        titleMedium: titleMedium,
+        titleSmall: titleSmall,
+        bodyLarge: bodyLarge,
+        bodyMedium: bodyMedium,
+        bodySmall: bodySmall,
+        labelLarge: labelLarge,
+        labelMedium: labelMedium,
+        labelSmall: labelSmall,
+      );
+}

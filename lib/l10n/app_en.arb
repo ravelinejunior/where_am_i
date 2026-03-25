@@ -1,0 +1,100 @@
+{
+  "@@locale": "en",
+
+  "appName": "Where Am I?",
+  "@appName": { "description": "App name" },
+
+  "missingPersons": "Missing Persons",
+  "@missingPersons": { "description": "Section title" },
+
+  "searchHint": "Search by name or location...",
+  "@searchHint": { "description": "Search input placeholder" },
+
+  "filterTitle": "Filters",
+  "@filterTitle": { "description": "Filter sheet title" },
+
+  "filterSex": "Sex",
+  "filterAge": "Age range",
+  "filterNationality": "Nationality",
+  "filterLastSeen": "Last seen after",
+  "filterBirthYear": "Birth year range",
+  "filterSource": "Source",
+  "filterApply": "Apply filters",
+  "filterClear": "Clear",
+
+  "sexMale": "Male",
+  "sexFemale": "Female",
+  "sexUnknown": "Unknown",
+
+  "lastSeenLabel": "Last seen",
+  "ageLabel": "Age",
+  "heightLabel": "Height",
+  "nationalityLabel": "Nationality",
+  "sexLabel": "Sex",
+  "caseIdLabel": "Case ID",
+  "sourceLabel": "Source",
+
+  "detailFacts": "Case details",
+  "detailContacts": "Contacts",
+  "detailPhotos": "Photos",
+
+  "shareCase": "Share this case",
+  "reportCase": "Report a missing person",
+
+  "sosTitle": "Emergency",
+  "sosCallEurope": "Call 112 (Europe)",
+  "sosDescription": "If you have information about a missing person or are in danger, call emergency services immediately.",
+
+  "loginTitle": "Sign in to report",
+  "loginSubtitle": "An account is required to report a missing person.",
+  "loginGoogle": "Continue with Google",
+  "loginEmail": "Continue with Email",
+
+  "reportTitle": "Report a missing person",
+  "reportName": "Full name",
+  "reportDOB": "Date of birth",
+  "reportLastSeen": "Last seen date",
+  "reportLastLocation": "Last known location",
+  "reportSex": "Sex",
+  "reportHeight": "Height (cm)",
+  "reportNationality": "Nationality",
+  "reportFacts": "Additional details",
+  "reportPhotos": "Add photos",
+  "reportSubmit": "Submit report",
+  "reportPendingNotice": "Your report will be reviewed before publication.",
+
+  "statusPending": "Pending review",
+  "statusApproved": "Active case",
+  "statusResolved": "Resolved",
+
+  "sourceInterpol": "INTERPOL",
+  "sourceCommunity": "Community",
+
+  "settingsTitle": "Settings",
+  "settingsLanguage": "Language",
+  "settingsAbout": "About",
+  "settingsPrivacy": "Privacy policy",
+
+  "errorNetwork": "Network error. Check your connection.",
+  "errorServer": "Server error. Try again later.",
+  "errorNotFound": "Not found.",
+  "errorGeneric": "Something went wrong.",
+  "retryButton": "Retry",
+
+  "emptyListTitle": "No cases found",
+  "emptyListSubtitle": "Try adjusting your filters.",
+
+  "loadingLabel": "Loading...",
+  "yearsOld": "{age} years old",
+  "@yearsOld": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "cmHeight": "{cm} cm",
+  "@cmHeight": {
+    "placeholders": {
+      "cm": { "type": "int" }
+    }
+  }
+}
