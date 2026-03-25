@@ -32,7 +32,11 @@ dependencies:
   cached_network_image: ^3.4.1
 
   # HTTP
-  http: ^1.2.2
+  http:
+    ^1.2.2
+
+    # Dependency injection
+  get_it: ^8.0.3
 
   # Utils
   intl: ^0.20.0
