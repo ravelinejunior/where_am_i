@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:where_am_i/firebase_options.dart';
 import 'app/app.dart';
 
 void main() async {
@@ -20,7 +22,7 @@ void main() async {
   );
 
   // Firebase — options will be added via flutterfire configure
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const App());
 }
