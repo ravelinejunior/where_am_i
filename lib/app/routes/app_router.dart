@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/router/route_names.dart';
 
+import '../../core/router/route_names.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/missing_persons/presentation/screens/missing_list_screen.dart';
+import '../../features/missing_persons/presentation/screens/missing_detail_screen.dart';
+import '../../features/missing_persons/domain/entities/missing_person_entity.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
 final appRouter = GoRouter(
@@ -18,19 +20,16 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouteNames.missingList,
       name: RouteNames.missingListName,
-      pageBuilder: (context, state) => _slide(const MissingListScreen(), state),
+      pageBuilder: (context, state) => _fade(const MissingListScreen(), state),
     ),
     GoRoute(
       path: RouteNames.missingDetail,
       name: RouteNames.missingDetailName,
       pageBuilder: (context, state) {
         final id = state.pathParameters['id']!;
-        // DetailScreen will be added in commit #8
+        final prefetched = state.extra as MissingPersonEntity?;
         return _slide(
-          Scaffold(
-            appBar: AppBar(title: const Text('Detail')),
-            body: Center(child: Text('Case: $id')),
-          ),
+          MissingDetailScreen(id: id, prefetched: prefetched),
           state,
         );
       },
@@ -45,7 +44,7 @@ final appRouter = GoRouter(
       name: RouteNames.loginName,
       pageBuilder: (context, state) => _fade(
         const Scaffold(
-            body: Center(child: Text('Login — coming in commit #10'))),
+            body: Center(child: Text('Login — coming in commit #5'))),
         state,
       ),
     ),
@@ -54,15 +53,13 @@ final appRouter = GoRouter(
       name: RouteNames.reportCaseName,
       pageBuilder: (context, state) => _slide(
         const Scaffold(
-            body: Center(child: Text('Report — coming in commit #11'))),
+            body: Center(child: Text('Report — coming in commit #6'))),
         state,
       ),
     ),
   ],
   errorBuilder: (context, state) => Scaffold(
-    body: Center(
-      child: Text('Route not found: ${state.uri}'),
-    ),
+    body: Center(child: Text('Route not found: ${state.uri}')),
   ),
 );
 
@@ -70,9 +67,8 @@ CustomTransitionPage<void> _fade(Widget child, GoRouterState state) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
-    transitionsBuilder: (_, animation, __, child) {
-      return FadeTransition(opacity: animation, child: child);
-    },
+    transitionsBuilder: (_, animation, __, child) =>
+        FadeTransition(opacity: animation, child: child),
     transitionDuration: const Duration(milliseconds: 350),
   );
 }
@@ -86,10 +82,7 @@ CustomTransitionPage<void> _slide(Widget child, GoRouterState state) {
         begin: const Offset(1.0, 0.0),
         end: Offset.zero,
       ).chain(CurveTween(curve: Curves.easeOutCubic));
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
+      return SlideTransition(position: animation.drive(tween), child: child);
     },
     transitionDuration: const Duration(milliseconds: 320),
   );

@@ -68,104 +68,36 @@ class _MissingListViewState extends State<_MissingListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          _buildSliverAppBar(context, innerBoxIsScrolled),
-        ],
-        body: BlocBuilder<MissingListBloc, MissingListState>(
-          builder: (context, state) {
-            return RefreshIndicator(
-              color: AppColors.primary,
-              backgroundColor: AppColors.surface,
-              onRefresh: () async {
-                context.read<MissingListBloc>().add(const MissingListFetched());
-                await Future.delayed(const Duration(milliseconds: 800));
+      // Fixed layout: AppBar + SearchBar pinned at top, list below
+      body: Column(
+        children: [
+          _TopBar(
+            searchController: _searchController,
+            onSearchChanged: (q) => context
+                .read<MissingListBloc>()
+                .add(MissingListSearchChanged(q)),
+            onFilterTap: () => _openFilterSheet(context),
+          ),
+          Expanded(
+            child: BlocBuilder<MissingListBloc, MissingListState>(
+              builder: (context, state) {
+                return RefreshIndicator(
+                  color: AppColors.primary,
+                  backgroundColor: AppColors.surface,
+                  onRefresh: () async {
+                    context
+                        .read<MissingListBloc>()
+                        .add(const MissingListFetched());
+                    await Future.delayed(const Duration(milliseconds: 800));
+                  },
+                  child: _buildBody(context, state),
+                );
               },
-              child: _buildBody(context, state),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: const _SosButton(),
-    );
-  }
-
-  Widget _buildSliverAppBar(BuildContext context, bool innerBoxIsScrolled) {
-    return SliverAppBar(
-      floating: true,
-      snap: true,
-      backgroundColor: AppColors.background,
-      expandedHeight: 120,
-      collapsedHeight: 60,
-      pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: const Icon(
-                Icons.person_search_rounded,
-                color: AppColors.textOnRed,
-                size: 13,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Where Am I?',
-              style: AppTextTheme.headlineMedium.copyWith(fontSize: 17),
-            ),
-          ],
-        ),
-        background: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 56, 20, 0),
-          child: Align(
-            alignment: Alignment.bottomLeft,
-            child: BlocBuilder<MissingListBloc, MissingListState>(
-              buildWhen: (p, c) => p.persons.length != c.persons.length,
-              builder: (_, state) => Text(
-                state.isSuccess
-                    ? '${state.persons.length} cases found'
-                    : 'Missing persons registry',
-                style: AppTextTheme.bodySmall,
-              ),
-            ),
-          ),
-        ),
-      ),
-      actions: [
-        BlocBuilder<MissingListBloc, MissingListState>(
-          buildWhen: (p, c) => p.filter.sortOrder != c.filter.sortOrder,
-          builder: (context, state) => _SortButton(
-            current: state.filter.sortOrder,
-            onSelected: (order) => context
-                .read<MissingListBloc>()
-                .add(MissingListSortChanged(order)),
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.settings_outlined),
-          onPressed: () => context.pushNamed(RouteNames.settingsName),
-        ),
-        const SizedBox(width: 4),
-      ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(56),
-        child: _SearchBar(
-          controller: _searchController,
-          onChanged: (q) => context
-              .read<MissingListBloc>()
-              .add(MissingListSearchChanged(q)),
-          onFilterTap: () => _openFilterSheet(context),
-        ),
-      ),
     );
   }
 
@@ -176,7 +108,7 @@ class _MissingListViewState extends State<_MissingListView> {
       return EmptyState(
         icon: Icons.cloud_off_rounded,
         title: 'Could not load cases',
-        subtitle: state.errorMessage ?? 'Check your connection and try again.',
+        subtitle: 'Check your connection and try again.',
         retryLabel: 'Retry',
         onRetry: () =>
             context.read<MissingListBloc>().add(const MissingListFetched()),
@@ -189,8 +121,7 @@ class _MissingListViewState extends State<_MissingListView> {
         subtitle: state.filter.hasActiveFilters
             ? 'Try adjusting your filters.'
             : 'No missing persons found for the selected criteria.',
-        retryLabel:
-            state.filter.hasActiveFilters ? 'Clear filters' : null,
+        retryLabel: state.filter.hasActiveFilters ? 'Clear filters' : null,
         onRetry: state.filter.hasActiveFilters
             ? () => context
                 .read<MissingListBloc>()
@@ -200,6 +131,7 @@ class _MissingListViewState extends State<_MissingListView> {
     }
 
     return ListView.separated(
+      controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
       itemCount: state.persons.length + (state.isLoadingMore ? 3 : 0),
       separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -237,71 +169,167 @@ class _MissingListViewState extends State<_MissingListView> {
   }
 }
 
-// ── Search bar ─────────────────────────────────────────────────
+// ── Top bar: AppBar + count + search — fixed column layout ────
 
-class _SearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
+class _TopBar extends StatelessWidget {
+  final TextEditingController searchController;
+  final ValueChanged<String> onSearchChanged;
   final VoidCallback onFilterTap;
 
-  const _SearchBar({
-    required this.controller,
-    required this.onChanged,
+  const _TopBar({
+    required this.searchController,
+    required this.onSearchChanged,
     required this.onFilterTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-      child: Row(
+    final topPadding = MediaQuery.of(context).padding.top;
+    return Container(
+      color: AppColors.background,
+      padding: EdgeInsets.only(top: topPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Container(
-              height: 42,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.border, width: 0.5),
-              ),
-              child: TextField(
-                controller: controller,
-                onChanged: onChanged,
-                style: AppTextTheme.bodyMedium,
-                decoration: InputDecoration(
-                  hintText: 'Search by name or location...',
-                  hintStyle: AppTextTheme.bodyMedium.copyWith(color: AppColors.textMuted),
-                  prefixIcon: const Icon(Icons.search_rounded, size: 18, color: AppColors.textMuted),
-                  suffixIcon: ValueListenableBuilder(
-                    valueListenable: controller,
-                    builder: (_, value, __) => value.text.isNotEmpty
-                        ? GestureDetector(
-                            onTap: () { controller.clear(); onChanged(''); },
-                            child: const Icon(Icons.close_rounded, size: 16, color: AppColors.textMuted),
-                          )
-                        : const SizedBox.shrink(),
+          // App bar row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
+            child: Row(
+              children: [
+                // Logo mark
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
+                  child: const Icon(
+                    Icons.person_search_rounded,
+                    color: AppColors.textOnRed,
+                    size: 16,
+                  ),
                 ),
+                const SizedBox(width: 10),
+                Text(
+                  'Where Am I?',
+                  style: AppTextTheme.headlineMedium,
+                ),
+                const Spacer(),
+                BlocBuilder<MissingListBloc, MissingListState>(
+                  buildWhen: (p, c) => p.filter.sortOrder != c.filter.sortOrder,
+                  builder: (context, state) => _SortButton(
+                    current: state.filter.sortOrder,
+                    onSelected: (order) => context
+                        .read<MissingListBloc>()
+                        .add(MissingListSortChanged(order)),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.settings_outlined, size: 20),
+                  onPressed: () => context.pushNamed(RouteNames.settingsName),
+                ),
+              ],
+            ),
+          ),
+
+          // Case count subtitle
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
+            child: BlocBuilder<MissingListBloc, MissingListState>(
+              buildWhen: (p, c) =>
+                  p.persons.length != c.persons.length || p.status != c.status,
+              builder: (_, state) => Text(
+                state.isSuccess
+                    ? '${state.persons.length} cases found'
+                    : 'Missing persons registry',
+                style: AppTextTheme.bodySmall,
               ),
             ),
           ),
-          const SizedBox(width: 10),
-          BlocBuilder<MissingListBloc, MissingListState>(
-            buildWhen: (p, c) => p.filter.activeFilterCount != c.filter.activeFilterCount,
-            builder: (_, state) => _FilterButton(
-              activeCount: state.filter.activeFilterCount,
-              onTap: onFilterTap,
+
+          // Search + filter row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _SearchField(
+                    controller: searchController,
+                    onChanged: onSearchChanged,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                BlocBuilder<MissingListBloc, MissingListState>(
+                  buildWhen: (p, c) =>
+                      p.filter.activeFilterCount != c.filter.activeFilterCount,
+                  builder: (_, state) => _FilterButton(
+                    activeCount: state.filter.activeFilterCount,
+                    onTap: onFilterTap,
+                  ),
+                ),
+              ],
             ),
           ),
+
+          const Divider(height: 1),
         ],
       ),
     );
   }
 }
+
+// ── Search field ───────────────────────────────────────────────
+
+class _SearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  const _SearchField({required this.controller, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 42,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        style: AppTextTheme.bodyMedium,
+        decoration: InputDecoration(
+          hintText: 'Search by name or location...',
+          hintStyle:
+              AppTextTheme.bodyMedium.copyWith(color: AppColors.textMuted),
+          prefixIcon: const Icon(Icons.search_rounded,
+              size: 18, color: AppColors.textMuted),
+          suffixIcon: ValueListenableBuilder(
+            valueListenable: controller,
+            builder: (_, value, __) => value.text.isNotEmpty
+                ? GestureDetector(
+                    onTap: () {
+                      controller.clear();
+                      onChanged('');
+                    },
+                    child: const Icon(Icons.close_rounded,
+                        size: 16, color: AppColors.textMuted),
+                  )
+                : const SizedBox.shrink(),
+          ),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 11),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Filter button ──────────────────────────────────────────────
 
 class _FilterButton extends StatelessWidget {
   final int activeCount;
@@ -328,21 +356,31 @@ class _FilterButton extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Icon(Icons.tune_rounded, size: 18,
-              color: hasFilters ? AppColors.textOnRed : AppColors.textSecondary),
+            Icon(Icons.tune_rounded,
+                size: 18,
+                color:
+                    hasFilters ? AppColors.textOnRed : AppColors.textSecondary),
             if (hasFilters)
               Positioned(
-                top: 6, right: 6,
+                top: 6,
+                right: 6,
                 child: Container(
-                  width: 14, height: 14,
+                  width: 14,
+                  height: 14,
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.primaryDark, width: 1.5),
+                    border:
+                        Border.all(color: AppColors.primaryDark, width: 1.5),
                   ),
                   child: Center(
-                    child: Text('$activeCount',
-                      style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w700, color: AppColors.textOnRed)),
+                    child: Text(
+                      '$activeCount',
+                      style: const TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textOnRed),
+                    ),
                   ),
                 ),
               ),
@@ -368,17 +406,20 @@ class _SortButton extends StatelessWidget {
       color: AppColors.surfaceVariant,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: onSelected,
-      itemBuilder: (_) => SortOrder.values.map((order) => PopupMenuItem(
-        value: order,
-        child: Row(children: [
-          if (current == order)
-            const Icon(Icons.check_rounded, size: 16, color: AppColors.primary)
-          else
-            const SizedBox(width: 16),
-          const SizedBox(width: 8),
-          Text(order.label, style: AppTextTheme.bodyMedium),
-        ]),
-      )).toList(),
+      itemBuilder: (_) => SortOrder.values
+          .map((order) => PopupMenuItem(
+                value: order,
+                child: Row(children: [
+                  if (current == order)
+                    const Icon(Icons.check_rounded,
+                        size: 16, color: AppColors.primary)
+                  else
+                    const SizedBox(width: 16),
+                  const SizedBox(width: 8),
+                  Text(order.label, style: AppTextTheme.bodyMedium),
+                ]),
+              ))
+          .toList(),
     );
   }
 }
@@ -410,7 +451,8 @@ class _SosButton extends StatelessWidget {
       foregroundColor: AppColors.textOnRed,
       elevation: 4,
       icon: const Icon(Icons.sos_rounded, size: 20),
-      label: Text('SOS', style: AppTextTheme.labelLarge.copyWith(color: AppColors.textOnRed)),
+      label: Text('SOS',
+          style: AppTextTheme.labelLarge.copyWith(color: AppColors.textOnRed)),
     );
   }
 
@@ -423,8 +465,11 @@ class _SosButton extends StatelessWidget {
         title: Row(children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(8)),
-            child: const Icon(Icons.sos_rounded, color: AppColors.textOnRed, size: 18),
+            decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(8)),
+            child: const Icon(Icons.sos_rounded,
+                color: AppColors.textOnRed, size: 18),
           ),
           const SizedBox(width: 12),
           Text('Emergency', style: AppTextTheme.headlineSmall),
@@ -436,7 +481,9 @@ class _SosButton extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: AppTextTheme.labelLarge.copyWith(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: AppTextTheme.labelLarge
+                    .copyWith(color: AppColors.textSecondary)),
           ),
           ElevatedButton.icon(
             onPressed: () async {

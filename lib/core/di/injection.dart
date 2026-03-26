@@ -53,11 +53,16 @@ Future<void> configureDependencies({
     ),
   );
 
-  sl.registerLazySingleton(() => GetMissingPersons(sl<IMissingPersonRepository>()));
-  sl.registerLazySingleton(() => GetMissingPersonDetail(sl<IMissingPersonRepository>()));
-  sl.registerLazySingleton(() => ReportMissingPerson(sl<IMissingPersonRepository>()));
-  sl.registerLazySingleton(() => UpdateCaseStatus(sl<IMissingPersonRepository>()));
-  sl.registerLazySingleton(() => GetPendingCases(sl<IMissingPersonRepository>()));
+  sl.registerLazySingleton(
+      () => GetMissingPersons(sl<IMissingPersonRepository>()));
+  sl.registerLazySingleton(
+      () => GetMissingPersonDetail(sl<IMissingPersonRepository>()));
+  sl.registerLazySingleton(
+      () => ReportMissingPerson(sl<IMissingPersonRepository>()));
+  sl.registerLazySingleton(
+      () => UpdateCaseStatus(sl<IMissingPersonRepository>()));
+  sl.registerLazySingleton(
+      () => GetPendingCases(sl<IMissingPersonRepository>()));
 }
 
 // ── No-op stub (before Firebase is configured) ────────────────
@@ -69,11 +74,13 @@ class _NoOpFirestoreDatasource implements IFirestoreRemoteDatasource {
   Future<List<FirestoreCaseModel>> getCases({
     required MissingPersonFilter filter,
     dynamic startAfter,
-  }) async => [];
+  }) async =>
+      [];
 
   @override
   Future<FirestoreCaseModel> getCaseDetail(String id) async =>
-      throw const ServerException(message: 'Firebase not configured.', statusCode: null);
+      throw const ServerException(
+          message: 'Firebase not configured.', statusCode: null);
 
   @override
   Future<FirestoreCaseModel> createCase({
@@ -81,7 +88,8 @@ class _NoOpFirestoreDatasource implements IFirestoreRemoteDatasource {
     required String userId,
     required List<String> localPhotoPaths,
   }) async =>
-      throw const ServerException(message: 'Firebase not configured.', statusCode: null);
+      throw const ServerException(
+          message: 'Firebase not configured.', statusCode: null);
 
   @override
   Future<void> updateCaseStatus({
