@@ -1,6 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
+import '../../features/auth/data/datasources/firebase_auth_datasource.dart';
+import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/domain/repositories/i_auth_repository.dart';
+import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/missing_persons/data/datasources/firestore_remote_datasource.dart';
 import '../../features/missing_persons/data/datasources/interpol_remote_datasource.dart';
 import '../../features/missing_persons/data/repositories/missing_repository_impl.dart';
@@ -20,32 +28,51 @@ final sl = GetIt.instance;
 
 /// Call in main() before runApp().
 ///
-/// [firestoreDatasource] — pass a real [FirestoreRemoteDatasource] after
-/// Firebase is initialised, or leave null to use the no-op stub (Interpol only).
-///
-/// Example with Firebase ready:
-/// ```dart
-/// await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-/// await configureDependencies(
-///   firestoreDatasource: FirestoreRemoteDatasource(
-///     FirebaseFirestore.instance,
-///     FirebaseStorage.instance,
-///   ),
-/// );
-/// ```
-Future<void> configureDependencies({
-  IFirestoreRemoteDatasource? firestoreDatasource,
-}) async {
+/// Set [withFirebase] to true after calling Firebase.initializeApp().
+Future<void> configureDependencies({bool withFirebase = false}) async {
+  // --- HTTP ---
   sl.registerLazySingleton<http.Client>(() => http.Client());
 
+  // --- Interpol ---
   sl.registerLazySingleton<IInterpolRemoteDatasource>(
     () => InterpolRemoteDatasource(sl<http.Client>()),
   );
 
-  sl.registerLazySingleton<IFirestoreRemoteDatasource>(
-    () => firestoreDatasource ?? const _NoOpFirestoreDatasource(),
-  );
+  // --- Firebase (only when initialised) ---
+  if (withFirebase) {
+    sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+    sl.registerLazySingleton<FirebaseFirestore>(
+        () => FirebaseFirestore.instance);
+    sl.registerLazySingleton<FirebaseStorage>(
+        () => FirebaseStorage.instance);
+    sl.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn());
 
+    sl.registerLazySingleton<IAuthRemoteDatasource>(
+      () => FirebaseAuthDatasource(
+        sl<FirebaseAuth>(),
+        sl<GoogleSignIn>(),
+      ),
+    );
+    sl.registerLazySingleton<IAuthRepository>(
+      () => AuthRepositoryImpl(sl<IAuthRemoteDatasource>()),
+    );
+    sl.registerFactory<AuthBloc>(
+      () => AuthBloc(repository: sl<IAuthRepository>()),
+    );
+
+    sl.registerLazySingleton<IFirestoreRemoteDatasource>(
+      () => FirestoreRemoteDatasource(
+        sl<FirebaseFirestore>(),
+        sl<FirebaseStorage>(),
+      ),
+    );
+  } else {
+    sl.registerLazySingleton<IFirestoreRemoteDatasource>(
+      () => const _NoOpFirestoreDatasource(),
+    );
+  }
+
+  // --- Missing Persons ---
   sl.registerLazySingleton<IMissingPersonRepository>(
     () => MissingRepositoryImpl(
       interpol: sl<IInterpolRemoteDatasource>(),
@@ -65,7 +92,7 @@ Future<void> configureDependencies({
       () => GetPendingCases(sl<IMissingPersonRepository>()));
 }
 
-// ── No-op stub (before Firebase is configured) ────────────────
+// ── No-op Firestore stub ───────────────────────────────────────
 
 class _NoOpFirestoreDatasource implements IFirestoreRemoteDatasource {
   const _NoOpFirestoreDatasource();
@@ -74,8 +101,7 @@ class _NoOpFirestoreDatasource implements IFirestoreRemoteDatasource {
   Future<List<FirestoreCaseModel>> getCases({
     required MissingPersonFilter filter,
     dynamic startAfter,
-  }) async =>
-      [];
+  }) async => [];
 
   @override
   Future<FirestoreCaseModel> getCaseDetail(String id) async =>
@@ -101,5 +127,6 @@ class _NoOpFirestoreDatasource implements IFirestoreRemoteDatasource {
   Future<List<FirestoreCaseModel>> getPendingCases() async => [];
 
   @override
-  Stream<FirestoreCaseModel?> watchCase(String id) => const Stream.empty();
+  Stream<FirestoreCaseModel?> watchCase(String id) =>
+      const Stream.empty();
 }

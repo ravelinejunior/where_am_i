@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/route_names.dart';
-import '../../features/splash/presentation/screens/splash_screen.dart';
-import '../../features/missing_persons/presentation/screens/missing_list_screen.dart';
-import '../../features/missing_persons/presentation/screens/missing_detail_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/missing_persons/domain/entities/missing_person_entity.dart';
+import '../../features/missing_persons/presentation/screens/missing_detail_screen.dart';
+import '../../features/missing_persons/presentation/screens/missing_list_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/splash/presentation/screens/splash_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: RouteNames.splash,
@@ -35,18 +36,17 @@ final appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: RouteNames.login,
+      name: RouteNames.loginName,
+      pageBuilder: (context, state) {
+        final redirect = state.uri.queryParameters['redirect'];
+        return _slide(LoginScreen(redirectTo: redirect), state);
+      },
+    ),
+    GoRoute(
       path: RouteNames.settings,
       name: RouteNames.settingsName,
       pageBuilder: (context, state) => _slide(const SettingsScreen(), state),
-    ),
-    GoRoute(
-      path: RouteNames.login,
-      name: RouteNames.loginName,
-      pageBuilder: (context, state) => _fade(
-        const Scaffold(
-            body: Center(child: Text('Login — coming in commit #5'))),
-        state,
-      ),
     ),
     GoRoute(
       path: RouteNames.reportCase,
