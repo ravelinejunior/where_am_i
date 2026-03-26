@@ -217,7 +217,8 @@ class _TopBar extends StatelessWidget {
                 ),
                 const Spacer(),
                 BlocBuilder<MissingListBloc, MissingListState>(
-                  buildWhen: (p, c) => p.filter.sortOrder != c.filter.sortOrder,
+                  buildWhen: (p, c) =>
+                      p.filter.sortOrder != c.filter.sortOrder,
                   builder: (context, state) => _SortButton(
                     current: state.filter.sortOrder,
                     onSelected: (order) => context
@@ -226,8 +227,16 @@ class _TopBar extends StatelessWidget {
                   ),
                 ),
                 IconButton(
+                  icon: const Icon(Icons.add_circle_outline_rounded,
+                      size: 20, color: AppColors.primaryLight),
+                  tooltip: 'Report a missing person',
+                  onPressed: () =>
+                      context.pushNamed(RouteNames.reportCaseName),
+                ),
+                IconButton(
                   icon: const Icon(Icons.settings_outlined, size: 20),
-                  onPressed: () => context.pushNamed(RouteNames.settingsName),
+                  onPressed: () =>
+                      context.pushNamed(RouteNames.settingsName),
                 ),
               ],
             ),
@@ -238,7 +247,8 @@ class _TopBar extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
             child: BlocBuilder<MissingListBloc, MissingListState>(
               buildWhen: (p, c) =>
-                  p.persons.length != c.persons.length || p.status != c.status,
+                  p.persons.length != c.persons.length ||
+                  p.status != c.status,
               builder: (_, state) => Text(
                 state.isSuccess
                     ? '${state.persons.length} cases found'
@@ -262,7 +272,8 @@ class _TopBar extends StatelessWidget {
                 const SizedBox(width: 10),
                 BlocBuilder<MissingListBloc, MissingListState>(
                   buildWhen: (p, c) =>
-                      p.filter.activeFilterCount != c.filter.activeFilterCount,
+                      p.filter.activeFilterCount !=
+                      c.filter.activeFilterCount,
                   builder: (_, state) => _FilterButton(
                     activeCount: state.filter.activeFilterCount,
                     onTap: onFilterTap,
@@ -358,8 +369,9 @@ class _FilterButton extends StatelessWidget {
           children: [
             Icon(Icons.tune_rounded,
                 size: 18,
-                color:
-                    hasFilters ? AppColors.textOnRed : AppColors.textSecondary),
+                color: hasFilters
+                    ? AppColors.textOnRed
+                    : AppColors.textSecondary),
             if (hasFilters)
               Positioned(
                 top: 6,
@@ -370,8 +382,8 @@ class _FilterButton extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
-                    border:
-                        Border.all(color: AppColors.primaryDark, width: 1.5),
+                    border: Border.all(
+                        color: AppColors.primaryDark, width: 1.5),
                   ),
                   child: Center(
                     child: Text(
@@ -404,7 +416,8 @@ class _SortButton extends StatelessWidget {
     return PopupMenuButton<SortOrder>(
       icon: const Icon(Icons.sort_rounded, size: 20),
       color: AppColors.surfaceVariant,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: onSelected,
       itemBuilder: (_) => SortOrder.values
           .map((order) => PopupMenuItem(
@@ -452,7 +465,8 @@ class _SosButton extends StatelessWidget {
       elevation: 4,
       icon: const Icon(Icons.sos_rounded, size: 20),
       label: Text('SOS',
-          style: AppTextTheme.labelLarge.copyWith(color: AppColors.textOnRed)),
+          style: AppTextTheme.labelLarge
+              .copyWith(color: AppColors.textOnRed)),
     );
   }
 
@@ -461,7 +475,8 @@ class _SosButton extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16)),
         title: Row(children: [
           Container(
             padding: const EdgeInsets.all(6),
@@ -493,7 +508,8 @@ class _SosButton extends StatelessWidget {
             },
             icon: const Icon(Icons.call_rounded, size: 16),
             label: const Text('Call 112'),
-            style: ElevatedButton.styleFrom(minimumSize: const Size(0, 44)),
+            style: ElevatedButton.styleFrom(
+                minimumSize: const Size(0, 44)),
           ),
         ],
       ),
