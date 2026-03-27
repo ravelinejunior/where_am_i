@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import '../core/di/injection.dart';
 import '../core/theme/app_theme.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
+import '../features/settings/presentation/bloc/settings_bloc.dart';
 import 'routes/app_router.dart';
 
 class App extends StatelessWidget {
@@ -12,22 +13,31 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>(
-      create: (_) => sl<AuthBloc>(),
-      child: MaterialApp.router(
-        title: 'Where Am I?',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        routerConfig: appRouter,
-        supportedLocales: const [
-          Locale('en'),
-          Locale('pt'),
-        ],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
+        BlocProvider<SettingsBloc>(create: (_) => sl<SettingsBloc>()),
+      ],
+      child: BlocBuilder<SettingsBloc, SettingsState>(
+        buildWhen: (p, c) => p.locale != c.locale,
+        builder: (context, settings) {
+          return MaterialApp.router(
+            title: 'Where Am I?',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.dark,
+            routerConfig: appRouter,
+            locale: settings.locale,
+            supportedLocales: const [
+              Locale('en'),
+              Locale('pt'),
+            ],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+          );
+        },
       ),
     );
   }

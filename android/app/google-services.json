@@ -12,7 +12,12 @@
           "package_name": "com.raveline.where_am_i"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "876749402791-1shn1d1gbc6vqn2vfd1vfsjl32qji1a4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAKDq0vLIiJPw6ilfcoRl0TzJLQF_ZDpUE"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "876749402791-1shn1d1gbc6vqn2vfd1vfsjl32qji1a4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "876749402791-1bic0l2cgbb9vbh46q066d8c7410plm5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.whereAmi"
+              }
+            }
+          ]
         }
       }
     }

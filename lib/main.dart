@@ -26,6 +26,7 @@ void main() async {
   );
 
   await configureDependencies(withFirebase: true);
+  await configureSharedServices();
 
   runApp(const App());
 }

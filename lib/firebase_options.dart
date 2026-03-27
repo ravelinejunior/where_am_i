@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     projectId: 'where-am-i-250326',
     storageBucket: 'where-am-i-250326.firebasestorage.app',
   );
+
 }

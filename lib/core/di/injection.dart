@@ -4,6 +4,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../features/settings/presentation/bloc/settings_bloc.dart';
 
 import '../../features/auth/data/datasources/firebase_auth_datasource.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
@@ -43,8 +46,7 @@ Future<void> configureDependencies({bool withFirebase = false}) async {
     sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
     sl.registerLazySingleton<FirebaseFirestore>(
         () => FirebaseFirestore.instance);
-    sl.registerLazySingleton<FirebaseStorage>(
-        () => FirebaseStorage.instance);
+    sl.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
     sl.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn());
 
     sl.registerLazySingleton<IAuthRemoteDatasource>(
@@ -92,6 +94,13 @@ Future<void> configureDependencies({bool withFirebase = false}) async {
       () => GetPendingCases(sl<IMissingPersonRepository>()));
 }
 
+Future<void> configureSharedServices() async {
+  final prefs = await SharedPreferences.getInstance();
+  sl.registerLazySingleton<SharedPreferences>(() => prefs);
+  sl.registerLazySingleton<SettingsBloc>(
+      () => SettingsBloc(sl<SharedPreferences>()));
+}
+
 // ── No-op Firestore stub ───────────────────────────────────────
 
 class _NoOpFirestoreDatasource implements IFirestoreRemoteDatasource {
@@ -101,7 +110,8 @@ class _NoOpFirestoreDatasource implements IFirestoreRemoteDatasource {
   Future<List<FirestoreCaseModel>> getCases({
     required MissingPersonFilter filter,
     dynamic startAfter,
-  }) async => [];
+  }) async =>
+      [];
 
   @override
   Future<FirestoreCaseModel> getCaseDetail(String id) async =>
@@ -127,6 +137,5 @@ class _NoOpFirestoreDatasource implements IFirestoreRemoteDatasource {
   Future<List<FirestoreCaseModel>> getPendingCases() async => [];
 
   @override
-  Stream<FirestoreCaseModel?> watchCase(String id) =>
-      const Stream.empty();
+  Stream<FirestoreCaseModel?> watchCase(String id) => const Stream.empty();
 }
