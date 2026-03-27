@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:where_am_i/features/missing_persons/domain/entities/missing_person_entity.dart';
 
+import '../../../../../../app/app.dart';
 import '../bloc/detail/missing_detail_bloc.dart';
 import '../widgets/photo_gallery.dart';
 import '../widgets/detail_row.dart';
@@ -60,9 +61,9 @@ class _DetailView extends StatelessWidget {
             appBar: AppBar(backgroundColor: AppColors.background),
             body: EmptyState(
               icon: Icons.person_off_outlined,
-              title: 'Case unavailable',
-              subtitle: 'This case could not be loaded right now.',
-              retryLabel: 'Go back',
+              title: context.l10n.caseUnavailable,
+              subtitle: context.l10n.caseUnavailableSubtitle,
+              retryLabel: context.l10n.goBack,
               onRetry: () => Navigator.of(context).pop(),
             ),
           );
@@ -96,11 +97,11 @@ class _DetailContent extends StatelessWidget {
                   const SizedBox(height: 24),
                   _buildInfoCard(context),
                   if (person.facts.isNotEmpty) ...[
-                    const DetailSectionTitle(title: 'Case details'),
+                    DetailSectionTitle(title: context.l10n.detailFacts),
                     _FactsList(facts: person.facts),
                   ],
                   if (person.contacts.isNotEmpty) ...[
-                    const DetailSectionTitle(title: 'Contacts'),
+                    DetailSectionTitle(title: context.l10n.detailContacts),
                     _ContactsList(contacts: person.contacts),
                   ],
                   const SizedBox(height: 24),
@@ -525,7 +526,7 @@ class _ActionButtons extends StatelessWidget {
             if (await canLaunchUrl(uri)) launchUrl(uri);
           },
           icon: const Icon(Icons.sos_rounded, size: 18),
-          label: const Text('Emergency — Call 112'),
+          label: Text(context.l10n.sosCallEurope),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.textOnRed,
@@ -538,7 +539,7 @@ class _ActionButtons extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => _share(context, person),
           icon: const Icon(Icons.share_outlined, size: 16),
-          label: const Text('Share this case'),
+          label: Text(context.l10n.shareCase),
         ),
 
         // Interpol link

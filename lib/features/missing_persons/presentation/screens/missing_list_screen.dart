@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../../app/app.dart';
 import '../bloc/list/missing_list_bloc.dart';
 import '../widgets/missing_person_card.dart';
 import '../widgets/missing_person_card_shimmer.dart';
@@ -107,9 +108,9 @@ class _MissingListViewState extends State<_MissingListView> {
     if (state.isFailure && state.persons.isEmpty) {
       return EmptyState(
         icon: Icons.cloud_off_rounded,
-        title: 'Could not load cases',
-        subtitle: 'Check your connection and try again.',
-        retryLabel: 'Retry',
+        title: context.l10n.emptyListTitle,
+        subtitle: context.l10n.errorNetwork,
+        retryLabel: context.l10n.retryButton,
         onRetry: () =>
             context.read<MissingListBloc>().add(const MissingListFetched()),
       );
@@ -117,11 +118,12 @@ class _MissingListViewState extends State<_MissingListView> {
 
     if (state.isEmpty) {
       return EmptyState(
-        title: 'No cases found',
+        title: context.l10n.emptyListTitle,
         subtitle: state.filter.hasActiveFilters
-            ? 'Try adjusting your filters.'
+            ? context.l10n.emptyListSubtitle
             : 'No missing persons found for the selected criteria.',
-        retryLabel: state.filter.hasActiveFilters ? 'Clear filters' : null,
+        retryLabel:
+            state.filter.hasActiveFilters ? context.l10n.filterClear : null,
         onRetry: state.filter.hasActiveFilters
             ? () => context
                 .read<MissingListBloc>()
@@ -212,13 +214,12 @@ class _TopBar extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'Where Am I?',
+                  context.l10n.appName,
                   style: AppTextTheme.headlineMedium,
                 ),
                 const Spacer(),
                 BlocBuilder<MissingListBloc, MissingListState>(
-                  buildWhen: (p, c) =>
-                      p.filter.sortOrder != c.filter.sortOrder,
+                  buildWhen: (p, c) => p.filter.sortOrder != c.filter.sortOrder,
                   builder: (context, state) => _SortButton(
                     current: state.filter.sortOrder,
                     onSelected: (order) => context
@@ -230,13 +231,11 @@ class _TopBar extends StatelessWidget {
                   icon: const Icon(Icons.add_circle_outline_rounded,
                       size: 20, color: AppColors.primaryLight),
                   tooltip: 'Report a missing person',
-                  onPressed: () =>
-                      context.pushNamed(RouteNames.reportCaseName),
+                  onPressed: () => context.pushNamed(RouteNames.reportCaseName),
                 ),
                 IconButton(
                   icon: const Icon(Icons.settings_outlined, size: 20),
-                  onPressed: () =>
-                      context.pushNamed(RouteNames.settingsName),
+                  onPressed: () => context.pushNamed(RouteNames.settingsName),
                 ),
               ],
             ),
@@ -247,12 +246,11 @@ class _TopBar extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
             child: BlocBuilder<MissingListBloc, MissingListState>(
               buildWhen: (p, c) =>
-                  p.persons.length != c.persons.length ||
-                  p.status != c.status,
+                  p.persons.length != c.persons.length || p.status != c.status,
               builder: (_, state) => Text(
                 state.isSuccess
                     ? '${state.persons.length} cases found'
-                    : 'Missing persons registry',
+                    : context.l10n.missingPersons,
                 style: AppTextTheme.bodySmall,
               ),
             ),
@@ -272,8 +270,7 @@ class _TopBar extends StatelessWidget {
                 const SizedBox(width: 10),
                 BlocBuilder<MissingListBloc, MissingListState>(
                   buildWhen: (p, c) =>
-                      p.filter.activeFilterCount !=
-                      c.filter.activeFilterCount,
+                      p.filter.activeFilterCount != c.filter.activeFilterCount,
                   builder: (_, state) => _FilterButton(
                     activeCount: state.filter.activeFilterCount,
                     onTap: onFilterTap,
@@ -312,7 +309,7 @@ class _SearchField extends StatelessWidget {
         onChanged: onChanged,
         style: AppTextTheme.bodyMedium,
         decoration: InputDecoration(
-          hintText: 'Search by name or location...',
+          hintText: context.l10n.searchHint,
           hintStyle:
               AppTextTheme.bodyMedium.copyWith(color: AppColors.textMuted),
           prefixIcon: const Icon(Icons.search_rounded,
@@ -369,9 +366,8 @@ class _FilterButton extends StatelessWidget {
           children: [
             Icon(Icons.tune_rounded,
                 size: 18,
-                color: hasFilters
-                    ? AppColors.textOnRed
-                    : AppColors.textSecondary),
+                color:
+                    hasFilters ? AppColors.textOnRed : AppColors.textSecondary),
             if (hasFilters)
               Positioned(
                 top: 6,
@@ -382,8 +378,8 @@ class _FilterButton extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                        color: AppColors.primaryDark, width: 1.5),
+                    border:
+                        Border.all(color: AppColors.primaryDark, width: 1.5),
                   ),
                   child: Center(
                     child: Text(
@@ -416,8 +412,7 @@ class _SortButton extends StatelessWidget {
     return PopupMenuButton<SortOrder>(
       icon: const Icon(Icons.sort_rounded, size: 20),
       color: AppColors.surfaceVariant,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: onSelected,
       itemBuilder: (_) => SortOrder.values
           .map((order) => PopupMenuItem(
@@ -464,9 +459,8 @@ class _SosButton extends StatelessWidget {
       foregroundColor: AppColors.textOnRed,
       elevation: 4,
       icon: const Icon(Icons.sos_rounded, size: 20),
-      label: Text('SOS',
-          style: AppTextTheme.labelLarge
-              .copyWith(color: AppColors.textOnRed)),
+      label: Text(context.l10n.sosTitle,
+          style: AppTextTheme.labelLarge.copyWith(color: AppColors.textOnRed)),
     );
   }
 
@@ -475,8 +469,7 @@ class _SosButton extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(children: [
           Container(
             padding: const EdgeInsets.all(6),
@@ -487,16 +480,16 @@ class _SosButton extends StatelessWidget {
                 color: AppColors.textOnRed, size: 18),
           ),
           const SizedBox(width: 12),
-          Text('Emergency', style: AppTextTheme.headlineSmall),
+          Text(context.l10n.sosTitle, style: AppTextTheme.headlineSmall),
         ]),
         content: Text(
-          'If you have information about a missing person or are in danger, call emergency services immediately.',
+          context.l10n.sosDescription,
           style: AppTextTheme.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
+            child: Text(context.l10n.cancel,
                 style: AppTextTheme.labelLarge
                     .copyWith(color: AppColors.textSecondary)),
           ),
@@ -507,9 +500,8 @@ class _SosButton extends StatelessWidget {
               if (await canLaunchUrl(uri)) launchUrl(uri);
             },
             icon: const Icon(Icons.call_rounded, size: 16),
-            label: const Text('Call 112'),
-            style: ElevatedButton.styleFrom(
-                minimumSize: const Size(0, 44)),
+            label: Text(context.l10n.sosCallEurope),
+            style: ElevatedButton.styleFrom(minimumSize: const Size(0, 44)),
           ),
         ],
       ),

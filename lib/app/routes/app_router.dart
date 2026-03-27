@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/route_names.dart';
+import '../../features/admin/presentation/screens/admin_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/missing_persons/domain/entities/missing_person_entity.dart';
 import '../../features/missing_persons/presentation/screens/missing_detail_screen.dart';
@@ -17,18 +18,18 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouteNames.splash,
       name: RouteNames.splashName,
-      pageBuilder: (ctx, state) => _fade(const SplashScreen(), state),
+      pageBuilder: (_, state) => _fade(const SplashScreen(), state),
     ),
     GoRoute(
       path: RouteNames.missingList,
       name: RouteNames.missingListName,
-      pageBuilder: (ctx, state) =>
+      pageBuilder: (_, state) =>
           _fade(const MissingListScreen(), state),
     ),
     GoRoute(
       path: RouteNames.missingDetail,
       name: RouteNames.missingDetailName,
-      pageBuilder: (ctx, state) {
+      pageBuilder: (_, state) {
         final id = state.pathParameters['id']!;
         final prefetched = state.extra as MissingPersonEntity?;
         return _slide(
@@ -38,7 +39,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouteNames.login,
       name: RouteNames.loginName,
-      pageBuilder: (ctx, state) {
+      pageBuilder: (_, state) {
         final redirect = state.uri.queryParameters['redirect'];
         return _slide(LoginScreen(redirectTo: redirect), state);
       },
@@ -46,17 +47,22 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouteNames.reportCase,
       name: RouteNames.reportCaseName,
-      pageBuilder: (ctx, state) =>
+      pageBuilder: (_, state) =>
           _slide(const ReportCaseScreen(), state),
     ),
     GoRoute(
       path: RouteNames.settings,
       name: RouteNames.settingsName,
-      pageBuilder: (ctx, state) =>
+      pageBuilder: (_, state) =>
           _slide(const SettingsScreen(), state),
     ),
+    GoRoute(
+      path: RouteNames.admin,
+      name: RouteNames.adminName,
+      pageBuilder: (_, state) => _slide(const AdminScreen(), state),
+    ),
   ],
-  errorBuilder: (ctx, state) => Scaffold(
+  errorBuilder: (_, state) => Scaffold(
     body: Center(child: Text('Route not found: ${state.uri}')),
   ),
 );

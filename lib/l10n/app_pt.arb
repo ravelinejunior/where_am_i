@@ -9,10 +9,9 @@
   "filterAge": "Faixa etária",
   "filterNationality": "Nacionalidade",
   "filterLastSeen": "Último avistamento após",
-  "filterBirthYear": "Faixa de nascimento",
   "filterSource": "Fonte",
   "filterApply": "Aplicar filtros",
-  "filterClear": "Limpar",
+  "filterClear": "Limpar tudo",
 
   "sexMale": "Masculino",
   "sexFemale": "Feminino",
@@ -36,11 +35,16 @@
   "sosTitle": "Emergência",
   "sosCallEurope": "Ligar 112 (Europa)",
   "sosDescription": "Se você tem informações sobre alguém desaparecido ou está em perigo, ligue imediatamente para a emergência.",
+  "sosCancel": "Cancelar",
 
   "loginTitle": "Entre para reportar",
   "loginSubtitle": "É necessária uma conta para reportar um desaparecimento.",
   "loginGoogle": "Entrar com Google",
   "loginEmail": "Entrar com Email",
+  "loginSignIn": "Entrar",
+  "loginCreateAccount": "Criar conta",
+  "loginForgotPassword": "Esqueceu a senha?",
+  "loginPasswordResetSent": "Email de redefinição enviado.",
 
   "reportTitle": "Reportar desaparecimento",
   "reportName": "Nome completo",
@@ -51,42 +55,66 @@
   "reportHeight": "Altura (cm)",
   "reportNationality": "Nacionalidade",
   "reportFacts": "Detalhes adicionais",
-  "reportPhotos": "Adicionar fotos",
+  "reportFactsHint": "Um detalhe por linha",
+  "reportPhotos": "Fotos",
+  "reportPhotosSubtitle": "Até 5 fotos (toque para adicionar)",
   "reportSubmit": "Enviar relato",
-  "reportPendingNotice": "Seu relato será revisado antes da publicação.",
+  "reportPendingNotice": "Seu relato será revisado antes da publicação. Compartilhe apenas informações verificadas.",
+  "reportSuccess": "Relato enviado",
+  "reportSuccessBody": "Obrigado. Seu relato está em revisão e será publicado após aprovação.",
+  "reportBackToCases": "Voltar aos casos",
 
   "statusPending": "Em revisão",
   "statusApproved": "Caso ativo",
   "statusResolved": "Resolvido",
+  "statusRejected": "Rejeitado",
 
   "sourceInterpol": "INTERPOL",
   "sourceCommunity": "Comunidade",
 
   "settingsTitle": "Configurações",
+  "settingsAccount": "Conta",
   "settingsLanguage": "Idioma",
+  "settingsEmergency": "Emergência",
   "settingsAbout": "Sobre",
   "settingsPrivacy": "Política de privacidade",
+  "settingsVersion": "Versão",
+  "settingsDataSources": "Fontes de dados",
+  "settingsSignIn": "Entrar",
+  "settingsSignOut": "Sair",
 
-  "errorNetwork": "Erro de rede. Verifique sua conexão.",
+  "adminTitle": "Admin — Casos pendentes",
+  "adminAllCaughtUp": "Tudo em dia",
+  "adminNoPending": "Sem casos pendentes para revisar.",
+  "adminApprove": "Aprovar e publicar",
+  "adminReject": "Rejeitar",
+  "adminRejectConfirmTitle": "Rejeitar caso?",
+  "adminApproved": "Caso aprovado e publicado.",
+  "adminRejected": "Caso rejeitado.",
+
+  "errorNetwork": "Sem conexão. Verifique sua internet e tente novamente.",
   "errorServer": "Erro no servidor. Tente novamente.",
   "errorNotFound": "Não encontrado.",
   "errorGeneric": "Algo deu errado.",
   "retryButton": "Tentar novamente",
+  "cancel": "Cancelar",
 
   "emptyListTitle": "Nenhum caso encontrado",
   "emptyListSubtitle": "Tente ajustar os filtros.",
+  "caseUnavailable": "Caso indisponível",
+  "caseUnavailableSubtitle": "Este caso não pôde ser carregado agora.",
+  "goBack": "Voltar",
 
-  "loadingLabel": "Carregando...",
   "yearsOld": "{age} anos",
   "@yearsOld": {
-    "placeholders": {
-      "age": { "type": "int" }
-    }
+    "placeholders": { "age": { "type": "int" } }
   },
   "cmHeight": "{cm} cm",
   "@cmHeight": {
-    "placeholders": {
-      "cm": { "type": "int" }
-    }
+    "placeholders": { "cm": { "type": "int" } }
+  },
+  "casesFound": "{count} casos encontrados",
+  "@casesFound": {
+    "placeholders": { "count": { "type": "int" } }
   }
 }

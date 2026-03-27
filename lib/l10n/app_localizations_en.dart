@@ -33,16 +33,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterLastSeen => 'Last seen after';
 
   @override
-  String get filterBirthYear => 'Birth year range';
-
-  @override
   String get filterSource => 'Source';
 
   @override
   String get filterApply => 'Apply filters';
 
   @override
-  String get filterClear => 'Clear';
+  String get filterClear => 'Clear all';
 
   @override
   String get sexMale => 'Male';
@@ -100,6 +97,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'If you have information about a missing person or are in danger, call emergency services immediately.';
 
   @override
+  String get sosCancel => 'Cancel';
+
+  @override
   String get loginTitle => 'Sign in to report';
 
   @override
@@ -111,6 +111,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginEmail => 'Continue with Email';
+
+  @override
+  String get loginSignIn => 'Sign in';
+
+  @override
+  String get loginCreateAccount => 'Create account';
+
+  @override
+  String get loginForgotPassword => 'Forgot password?';
+
+  @override
+  String get loginPasswordResetSent => 'Password reset email sent.';
 
   @override
   String get reportTitle => 'Report a missing person';
@@ -140,14 +152,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportFacts => 'Additional details';
 
   @override
-  String get reportPhotos => 'Add photos';
+  String get reportFactsHint => 'One detail per line';
+
+  @override
+  String get reportPhotos => 'Photos';
+
+  @override
+  String get reportPhotosSubtitle => 'Up to 5 photos (tap to add)';
 
   @override
   String get reportSubmit => 'Submit report';
 
   @override
   String get reportPendingNotice =>
-      'Your report will be reviewed before publication.';
+      'Your report will be reviewed before publication. Only share verified information.';
+
+  @override
+  String get reportSuccess => 'Report submitted';
+
+  @override
+  String get reportSuccessBody =>
+      'Thank you. Your report is under review and will appear publicly once approved.';
+
+  @override
+  String get reportBackToCases => 'Back to cases';
 
   @override
   String get statusPending => 'Pending review';
@@ -159,6 +187,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusResolved => 'Resolved';
 
   @override
+  String get statusRejected => 'Rejected';
+
+  @override
   String get sourceInterpol => 'INTERPOL';
 
   @override
@@ -168,7 +199,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
+  String get settingsAccount => 'Account';
+
+  @override
   String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsEmergency => 'Emergency';
 
   @override
   String get settingsAbout => 'About';
@@ -177,7 +214,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPrivacy => 'Privacy policy';
 
   @override
-  String get errorNetwork => 'Network error. Check your connection.';
+  String get settingsVersion => 'Version';
+
+  @override
+  String get settingsDataSources => 'Data sources';
+
+  @override
+  String get settingsSignIn => 'Sign in';
+
+  @override
+  String get settingsSignOut => 'Sign out';
+
+  @override
+  String get adminTitle => 'Admin — Pending cases';
+
+  @override
+  String get adminAllCaughtUp => 'All caught up';
+
+  @override
+  String get adminNoPending => 'No pending cases to review.';
+
+  @override
+  String get adminApprove => 'Approve & publish';
+
+  @override
+  String get adminReject => 'Reject';
+
+  @override
+  String get adminRejectConfirmTitle => 'Reject case?';
+
+  @override
+  String get adminApproved => 'Case approved and published.';
+
+  @override
+  String get adminRejected => 'Case rejected.';
+
+  @override
+  String get errorNetwork =>
+      'No connection. Check your internet and try again.';
 
   @override
   String get errorServer => 'Server error. Try again later.';
@@ -192,13 +266,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retryButton => 'Retry';
 
   @override
+  String get cancel => 'Cancel';
+
+  @override
   String get emptyListTitle => 'No cases found';
 
   @override
   String get emptyListSubtitle => 'Try adjusting your filters.';
 
   @override
-  String get loadingLabel => 'Loading...';
+  String get caseUnavailable => 'Case unavailable';
+
+  @override
+  String get caseUnavailableSubtitle =>
+      'This case could not be loaded right now.';
+
+  @override
+  String get goBack => 'Go back';
 
   @override
   String yearsOld(int age) {
@@ -208,5 +292,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String cmHeight(int cm) {
     return '$cm cm';
+  }
+
+  @override
+  String casesFound(int count) {
+    return '$count cases found';
   }
 }

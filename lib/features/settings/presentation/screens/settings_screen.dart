@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../app/app.dart';
 import '../bloc/settings_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -18,12 +19,12 @@ class SettingsScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        title: const Text('Settings'),
+        title: Text(context.l10n.settingsTitle),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
-          _SectionHeader(title: 'Account'),
+          _SectionHeader(title: context.l10n.settingsAccount),
           BlocBuilder<AuthBloc, AuthState>(
             builder: (context, auth) {
               if (auth.isAuthenticated && auth.user != null) {
@@ -38,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
               }
               return _SettingsTile(
                 icon: Icons.login_rounded,
-                title: 'Sign in',
+                title: context.l10n.settingsSignIn,
                 subtitle: 'Required to report missing persons',
                 onTap: () => context.pushNamed(RouteNames.loginName),
                 trailing: const Icon(Icons.chevron_right_rounded,
@@ -46,10 +47,8 @@ class SettingsScreen extends StatelessWidget {
               );
             },
           ),
-
           const _Divider(),
-
-          _SectionHeader(title: 'Language'),
+          _SectionHeader(title: context.l10n.settingsLanguage),
           BlocBuilder<SettingsBloc, SettingsState>(
             builder: (context, settings) => Column(
               children: [
@@ -72,10 +71,8 @@ class SettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-
           const _Divider(),
-
-          _SectionHeader(title: 'Emergency'),
+          _SectionHeader(title: context.l10n.settingsEmergency),
           _SettingsTile(
             icon: Icons.sos_rounded,
             iconColor: AppColors.primary,
@@ -86,8 +83,7 @@ class SettingsScreen extends StatelessWidget {
               if (await canLaunchUrl(uri)) launchUrl(uri);
             },
             trailing: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.primaryDark,
                 borderRadius: BorderRadius.circular(6),
@@ -97,21 +93,18 @@ class SettingsScreen extends StatelessWidget {
                       .copyWith(color: AppColors.textOnRed)),
             ),
           ),
-
           const _Divider(),
-
-          _SectionHeader(title: 'About'),
+          _SectionHeader(title: context.l10n.settingsAbout),
           _SettingsTile(
             icon: Icons.info_outline_rounded,
-            title: 'Version',
+            title: context.l10n.settingsVersion,
             subtitle: AppConstants.appVersion,
           ),
           _SettingsTile(
             icon: Icons.shield_outlined,
-            title: 'Privacy policy',
+            title: context.l10n.settingsPrivacy,
             onTap: () async {
-              final uri =
-                  Uri.parse('https://www.anthropic.com/privacy');
+              final uri = Uri.parse('https://www.anthropic.com/privacy');
               if (await canLaunchUrl(uri)) {
                 launchUrl(uri, mode: LaunchMode.externalApplication);
               }
@@ -121,7 +114,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           _SettingsTile(
             icon: Icons.business_outlined,
-            title: 'Data sources',
+            title: context.l10n.settingsDataSources,
             subtitle: 'INTERPOL Yellow Notices + community reports',
           ),
           _SettingsTile(
@@ -138,7 +131,17 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.open_in_new_rounded,
                 size: 14, color: AppColors.textMuted),
           ),
-
+          const _Divider(),
+          const _SectionHeader(title: 'Admin'),
+          _SettingsTile(
+            icon: Icons.admin_panel_settings_outlined,
+            iconColor: AppColors.warning,
+            title: 'Review pending cases',
+            subtitle: 'Approve or reject community reports',
+            onTap: () => context.pushNamed(RouteNames.adminName),
+            trailing: const Icon(Icons.chevron_right_rounded,
+                size: 18, color: AppColors.textMuted),
+          ),
           const SizedBox(height: 32),
           Center(
             child: Column(
@@ -157,8 +160,7 @@ class SettingsScreen extends StatelessWidget {
                           color: AppColors.textOnRed, size: 13),
                     ),
                     const SizedBox(width: 8),
-                    Text('Where Am I?',
-                        style: AppTextTheme.titleMedium),
+                    Text('Where Am I?', style: AppTextTheme.titleMedium),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -241,14 +243,14 @@ class _AccountTile extends StatelessWidget {
             TextButton(
               onPressed: onSignOut,
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 minimumSize: Size.zero,
               ),
               child: Text(
-                'Sign out',
-                style: AppTextTheme.labelMedium
-                    .copyWith(color: AppColors.danger),
+                context.l10n.settingsSignOut,
+                style:
+                    AppTextTheme.labelMedium.copyWith(color: AppColors.danger),
               ),
             ),
           ],
@@ -275,18 +277,14 @@ class _LanguageTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-      leading:
-          Text(flag, style: const TextStyle(fontSize: 22)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      leading: Text(flag, style: const TextStyle(fontSize: 22)),
       title: Text(label, style: AppTextTheme.bodyMedium),
       trailing: AnimatedSwitcher(
         duration: AppConstants.animFast,
         child: selected
             ? const Icon(Icons.check_rounded,
-                key: ValueKey('check'),
-                size: 18,
-                color: AppColors.primary)
+                key: ValueKey('check'), size: 18, color: AppColors.primary)
             : const SizedBox.shrink(key: ValueKey('empty')),
       ),
     );
@@ -314,8 +312,7 @@ class _SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       leading: Container(
         width: 36,
         height: 36,
@@ -323,8 +320,8 @@ class _SettingsTile extends StatelessWidget {
           color: AppColors.surfaceVariant,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon,
-            size: 18, color: iconColor ?? AppColors.textSecondary),
+        child:
+            Icon(icon, size: 18, color: iconColor ?? AppColors.textSecondary),
       ),
       title: Text(title, style: AppTextTheme.titleMedium),
       subtitle: subtitle != null
@@ -354,9 +351,6 @@ class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Divider(
-        height: 1,
-        indent: 20,
-        endIndent: 20,
-        color: AppColors.divider);
+        height: 1, indent: 20, endIndent: 20, color: AppColors.divider);
   }
 }

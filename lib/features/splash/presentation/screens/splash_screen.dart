@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../../app/app.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/router/route_names.dart';
 
@@ -39,13 +40,18 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 800),
     );
 
-    _lineAnim = CurvedAnimation(parent: _lineController, curve: Curves.easeOutExpo);
+    _lineAnim =
+        CurvedAnimation(parent: _lineController, curve: Curves.easeOutExpo);
     _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeIn);
     _textAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _textController, curve: const Interval(0, 0.6, curve: Curves.easeOut)),
+      CurvedAnimation(
+          parent: _textController,
+          curve: const Interval(0, 0.6, curve: Curves.easeOut)),
     );
     _subtitleAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _textController, curve: const Interval(0.3, 1.0, curve: Curves.easeOut)),
+      CurvedAnimation(
+          parent: _textController,
+          curve: const Interval(0.3, 1.0, curve: Curves.easeOut)),
     );
 
     _runSequence();
@@ -165,7 +171,7 @@ class _SplashScreenState extends State<SplashScreen>
                       child: Opacity(
                         opacity: _subtitleAnim.value,
                         child: Text(
-                          'Missing persons registry\nfor immigrants in Europe',
+                          context.l10n.missingPersons,
                           style: AppTextTheme.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                             height: 1.6,

@@ -5,22 +5,15 @@
   "@appName": { "description": "App name" },
 
   "missingPersons": "Missing Persons",
-  "@missingPersons": { "description": "Section title" },
-
   "searchHint": "Search by name or location...",
-  "@searchHint": { "description": "Search input placeholder" },
-
   "filterTitle": "Filters",
-  "@filterTitle": { "description": "Filter sheet title" },
-
   "filterSex": "Sex",
   "filterAge": "Age range",
   "filterNationality": "Nationality",
   "filterLastSeen": "Last seen after",
-  "filterBirthYear": "Birth year range",
   "filterSource": "Source",
   "filterApply": "Apply filters",
-  "filterClear": "Clear",
+  "filterClear": "Clear all",
 
   "sexMale": "Male",
   "sexFemale": "Female",
@@ -44,11 +37,16 @@
   "sosTitle": "Emergency",
   "sosCallEurope": "Call 112 (Europe)",
   "sosDescription": "If you have information about a missing person or are in danger, call emergency services immediately.",
+  "sosCancel": "Cancel",
 
   "loginTitle": "Sign in to report",
   "loginSubtitle": "An account is required to report a missing person.",
   "loginGoogle": "Continue with Google",
   "loginEmail": "Continue with Email",
+  "loginSignIn": "Sign in",
+  "loginCreateAccount": "Create account",
+  "loginForgotPassword": "Forgot password?",
+  "loginPasswordResetSent": "Password reset email sent.",
 
   "reportTitle": "Report a missing person",
   "reportName": "Full name",
@@ -59,42 +57,66 @@
   "reportHeight": "Height (cm)",
   "reportNationality": "Nationality",
   "reportFacts": "Additional details",
-  "reportPhotos": "Add photos",
+  "reportFactsHint": "One detail per line",
+  "reportPhotos": "Photos",
+  "reportPhotosSubtitle": "Up to 5 photos (tap to add)",
   "reportSubmit": "Submit report",
-  "reportPendingNotice": "Your report will be reviewed before publication.",
+  "reportPendingNotice": "Your report will be reviewed before publication. Only share verified information.",
+  "reportSuccess": "Report submitted",
+  "reportSuccessBody": "Thank you. Your report is under review and will appear publicly once approved.",
+  "reportBackToCases": "Back to cases",
 
   "statusPending": "Pending review",
   "statusApproved": "Active case",
   "statusResolved": "Resolved",
+  "statusRejected": "Rejected",
 
   "sourceInterpol": "INTERPOL",
   "sourceCommunity": "Community",
 
   "settingsTitle": "Settings",
+  "settingsAccount": "Account",
   "settingsLanguage": "Language",
+  "settingsEmergency": "Emergency",
   "settingsAbout": "About",
   "settingsPrivacy": "Privacy policy",
+  "settingsVersion": "Version",
+  "settingsDataSources": "Data sources",
+  "settingsSignIn": "Sign in",
+  "settingsSignOut": "Sign out",
 
-  "errorNetwork": "Network error. Check your connection.",
+  "adminTitle": "Admin — Pending cases",
+  "adminAllCaughtUp": "All caught up",
+  "adminNoPending": "No pending cases to review.",
+  "adminApprove": "Approve & publish",
+  "adminReject": "Reject",
+  "adminRejectConfirmTitle": "Reject case?",
+  "adminApproved": "Case approved and published.",
+  "adminRejected": "Case rejected.",
+
+  "errorNetwork": "No connection. Check your internet and try again.",
   "errorServer": "Server error. Try again later.",
   "errorNotFound": "Not found.",
   "errorGeneric": "Something went wrong.",
   "retryButton": "Retry",
+  "cancel": "Cancel",
 
   "emptyListTitle": "No cases found",
   "emptyListSubtitle": "Try adjusting your filters.",
+  "caseUnavailable": "Case unavailable",
+  "caseUnavailableSubtitle": "This case could not be loaded right now.",
+  "goBack": "Go back",
 
-  "loadingLabel": "Loading...",
   "yearsOld": "{age} years old",
   "@yearsOld": {
-    "placeholders": {
-      "age": { "type": "int" }
-    }
+    "placeholders": { "age": { "type": "int" } }
   },
   "cmHeight": "{cm} cm",
   "@cmHeight": {
-    "placeholders": {
-      "cm": { "type": "int" }
-    }
+    "placeholders": { "cm": { "type": "int" } }
+  },
+  "casesFound": "{count} cases found",
+  "@casesFound": {
+    "placeholders": { "count": { "type": "int" } }
   }
 }

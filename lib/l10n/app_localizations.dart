@@ -104,19 +104,19 @@ abstract class AppLocalizations {
   /// **'Where Am I?'**
   String get appName;
 
-  /// Section title
+  /// No description provided for @missingPersons.
   ///
   /// In en, this message translates to:
   /// **'Missing Persons'**
   String get missingPersons;
 
-  /// Search input placeholder
+  /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:
   /// **'Search by name or location...'**
   String get searchHint;
 
-  /// Filter sheet title
+  /// No description provided for @filterTitle.
   ///
   /// In en, this message translates to:
   /// **'Filters'**
@@ -146,12 +146,6 @@ abstract class AppLocalizations {
   /// **'Last seen after'**
   String get filterLastSeen;
 
-  /// No description provided for @filterBirthYear.
-  ///
-  /// In en, this message translates to:
-  /// **'Birth year range'**
-  String get filterBirthYear;
-
   /// No description provided for @filterSource.
   ///
   /// In en, this message translates to:
@@ -167,7 +161,7 @@ abstract class AppLocalizations {
   /// No description provided for @filterClear.
   ///
   /// In en, this message translates to:
-  /// **'Clear'**
+  /// **'Clear all'**
   String get filterClear;
 
   /// No description provided for @sexMale.
@@ -278,6 +272,12 @@ abstract class AppLocalizations {
   /// **'If you have information about a missing person or are in danger, call emergency services immediately.'**
   String get sosDescription;
 
+  /// No description provided for @sosCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get sosCancel;
+
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:
@@ -301,6 +301,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with Email'**
   String get loginEmail;
+
+  /// No description provided for @loginSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get loginSignIn;
+
+  /// No description provided for @loginCreateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get loginCreateAccount;
+
+  /// No description provided for @loginForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get loginForgotPassword;
+
+  /// No description provided for @loginPasswordResetSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset email sent.'**
+  String get loginPasswordResetSent;
 
   /// No description provided for @reportTitle.
   ///
@@ -356,11 +380,23 @@ abstract class AppLocalizations {
   /// **'Additional details'**
   String get reportFacts;
 
+  /// No description provided for @reportFactsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One detail per line'**
+  String get reportFactsHint;
+
   /// No description provided for @reportPhotos.
   ///
   /// In en, this message translates to:
-  /// **'Add photos'**
+  /// **'Photos'**
   String get reportPhotos;
+
+  /// No description provided for @reportPhotosSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 5 photos (tap to add)'**
+  String get reportPhotosSubtitle;
 
   /// No description provided for @reportSubmit.
   ///
@@ -371,8 +407,26 @@ abstract class AppLocalizations {
   /// No description provided for @reportPendingNotice.
   ///
   /// In en, this message translates to:
-  /// **'Your report will be reviewed before publication.'**
+  /// **'Your report will be reviewed before publication. Only share verified information.'**
   String get reportPendingNotice;
+
+  /// No description provided for @reportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted'**
+  String get reportSuccess;
+
+  /// No description provided for @reportSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you. Your report is under review and will appear publicly once approved.'**
+  String get reportSuccessBody;
+
+  /// No description provided for @reportBackToCases.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to cases'**
+  String get reportBackToCases;
 
   /// No description provided for @statusPending.
   ///
@@ -392,6 +446,12 @@ abstract class AppLocalizations {
   /// **'Resolved'**
   String get statusResolved;
 
+  /// No description provided for @statusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get statusRejected;
+
   /// No description provided for @sourceInterpol.
   ///
   /// In en, this message translates to:
@@ -410,11 +470,23 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsTitle;
 
+  /// No description provided for @settingsAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get settingsAccount;
+
   /// No description provided for @settingsLanguage.
   ///
   /// In en, this message translates to:
   /// **'Language'**
   String get settingsLanguage;
+
+  /// No description provided for @settingsEmergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get settingsEmergency;
 
   /// No description provided for @settingsAbout.
   ///
@@ -428,10 +500,82 @@ abstract class AppLocalizations {
   /// **'Privacy policy'**
   String get settingsPrivacy;
 
+  /// No description provided for @settingsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get settingsVersion;
+
+  /// No description provided for @settingsDataSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Data sources'**
+  String get settingsDataSources;
+
+  /// No description provided for @settingsSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get settingsSignIn;
+
+  /// No description provided for @settingsSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get settingsSignOut;
+
+  /// No description provided for @adminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin — Pending cases'**
+  String get adminTitle;
+
+  /// No description provided for @adminAllCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up'**
+  String get adminAllCaughtUp;
+
+  /// No description provided for @adminNoPending.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending cases to review.'**
+  String get adminNoPending;
+
+  /// No description provided for @adminApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve & publish'**
+  String get adminApprove;
+
+  /// No description provided for @adminReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get adminReject;
+
+  /// No description provided for @adminRejectConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject case?'**
+  String get adminRejectConfirmTitle;
+
+  /// No description provided for @adminApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Case approved and published.'**
+  String get adminApproved;
+
+  /// No description provided for @adminRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Case rejected.'**
+  String get adminRejected;
+
   /// No description provided for @errorNetwork.
   ///
   /// In en, this message translates to:
-  /// **'Network error. Check your connection.'**
+  /// **'No connection. Check your internet and try again.'**
   String get errorNetwork;
 
   /// No description provided for @errorServer.
@@ -458,6 +602,12 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retryButton;
 
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
   /// No description provided for @emptyListTitle.
   ///
   /// In en, this message translates to:
@@ -470,11 +620,23 @@ abstract class AppLocalizations {
   /// **'Try adjusting your filters.'**
   String get emptyListSubtitle;
 
-  /// No description provided for @loadingLabel.
+  /// No description provided for @caseUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'Loading...'**
-  String get loadingLabel;
+  /// **'Case unavailable'**
+  String get caseUnavailable;
+
+  /// No description provided for @caseUnavailableSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This case could not be loaded right now.'**
+  String get caseUnavailableSubtitle;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get goBack;
 
   /// No description provided for @yearsOld.
   ///
@@ -487,6 +649,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{cm} cm'**
   String cmHeight(int cm);
+
+  /// No description provided for @casesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} cases found'**
+  String casesFound(int count);
 }
 
 class _AppLocalizationsDelegate

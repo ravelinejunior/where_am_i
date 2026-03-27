@@ -13,4 +13,9 @@ abstract final class RouteNames {
   static const String reportCaseName = 'report-case';
   static const String loginName = 'login';
   static const String settingsName = 'settings';
+
+  static const String admin = '/admin';
+  static const String adminName = 'admin';
 }
+
+// Add to existing class — append these lines:
