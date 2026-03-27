@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/utils/url_launcher_util.dart';
 
 import '../../../../../../app/app.dart';
 import '../bloc/list/missing_list_bloc.dart';
@@ -497,7 +497,7 @@ class _SosButton extends StatelessWidget {
             onPressed: () async {
               Navigator.pop(context);
               final uri = Uri.parse(AppConstants.emergencyNumber);
-              if (await canLaunchUrl(uri)) launchUrl(uri);
+              await launchSafely(uri.toString());
             },
             icon: const Icon(Icons.call_rounded, size: 16),
             label: Text(context.l10n.sosCallEurope),

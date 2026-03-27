@@ -3,24 +3,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 import 'package:where_am_i/features/missing_persons/domain/entities/missing_person_entity.dart';
 
-import '../../../../../../app/app.dart';
 import '../bloc/detail/missing_detail_bloc.dart';
 import '../widgets/photo_gallery.dart';
 import '../widgets/detail_row.dart';
 import '../widgets/empty_state.dart';
 
-import '../../../../../../core/di/injection.dart';
-import '../../../../../../core/enums/enums.dart';
-import '../../../../../../core/theme/theme.dart';
-import '../../../../../../core/constants/app_constants.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/enums/enums.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/utils/url_launcher_util.dart';
+import '../../../../core/utils/country_utils.dart';
+import '../../../../app/app.dart';
 
 class MissingDetailScreen extends StatelessWidget {
   final String id;
-
-  /// Entity passed from the list via GoRouter extra — skips network call.
   final MissingPersonEntity? prefetched;
 
   const MissingDetailScreen({
@@ -54,7 +54,6 @@ class _DetailView extends StatelessWidget {
         if (state.isLoading || state.status == MissingDetailStatus.initial) {
           return _LoadingScaffold();
         }
-
         if (state.isFailure || state.person == null) {
           return Scaffold(
             backgroundColor: AppColors.background,
@@ -68,16 +67,16 @@ class _DetailView extends StatelessWidget {
             ),
           );
         }
-
         return _DetailContent(person: state.person!);
       },
     );
   }
 }
 
+// ── Main content ───────────────────────────────────────────────
+
 class _DetailContent extends StatelessWidget {
   final MissingPersonEntity person;
-
   const _DetailContent({required this.person});
 
   @override
@@ -95,13 +94,17 @@ class _DetailContent extends StatelessWidget {
                 children: [
                   _NameHeader(person: person),
                   const SizedBox(height: 24),
-                  _buildInfoCard(context),
+                  _InfoCard(person: person),
                   if (person.facts.isNotEmpty) ...[
-                    DetailSectionTitle(title: context.l10n.detailFacts),
-                    _FactsList(facts: person.facts),
+                    const DetailSectionTitle(title: 'Case details'),
+                    _FactsList(
+                        facts: person.facts
+                            .where(
+                                (f) => !f.startsWith('Family name at birth:'))
+                            .toList()),
                   ],
                   if (person.contacts.isNotEmpty) ...[
-                    DetailSectionTitle(title: context.l10n.detailContacts),
+                    const DetailSectionTitle(title: 'Contacts'),
                     _ContactsList(contacts: person.contacts),
                   ],
                   const SizedBox(height: 24),
@@ -161,7 +164,104 @@ class _DetailContent extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard(BuildContext context) {
+  void _share(MissingPersonEntity person) {
+    final age =
+        person.estimatedAge != null ? ', ${person.estimatedAge} yrs' : '';
+    final loc = person.lastSeenLocation != null
+        ? '\nPlace of disappearance: ${person.lastSeenLocation}'
+        : '';
+    final url = person.externalUrl ?? '';
+    Share.share(
+      '🔴 MISSING PERSON\n\n${person.name}$age\n$loc\n\n'
+      'If you have any information, please contact the authorities.'
+      '${url.isNotEmpty ? '\n\n$url' : ''}',
+      subject: 'Missing Person: ${person.name}',
+    );
+  }
+}
+
+// ── Info card ──────────────────────────────────────────────────
+
+class _InfoCard extends StatelessWidget {
+  final MissingPersonEntity person;
+  const _InfoCard({required this.person});
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = <Widget>[];
+    bool first = true;
+
+    void add(String label, String value, IconData icon) {
+      if (!first) rows.add(const DetailDivider());
+      rows.add(DetailRow(label: label, value: value, icon: icon));
+      first = false;
+    }
+
+    // Mirror interpol.int "Identity particulars" order
+    if (person.surname?.isNotEmpty == true) {
+      add('FAMILY NAME', person.surname!.toUpperCase(),
+          Icons.person_outline_rounded);
+    }
+    if (person.forename?.isNotEmpty == true) {
+      add('FORENAME', _tc(person.forename!), Icons.badge_outlined);
+    }
+    // Family name at birth — shown only if different from family name
+    // (comes from facts list for Interpol cases)
+    final familyAtBirth = person.facts
+        .where((f) => f.startsWith('Family name at birth:'))
+        .map((f) => f.replaceFirst('Family name at birth: ', ''))
+        .firstOrNull;
+    if (familyAtBirth != null) {
+      add('FAMILY NAME AT BIRTH', familyAtBirth, Icons.history_edu_outlined);
+    }
+    // Only show gender row if we have a value (detail fetch may not have arrived yet)
+    if (person.sex != PersonSex.unknown) {
+      add('GENDER', person.sex.label, Icons.wc_outlined);
+    }
+    if (person.birthDate != null) {
+      final age = person.estimatedAge;
+      add(
+        'DATE OF BIRTH',
+        '${DateFormat('dd/MM/yyyy').format(person.birthDate!)}'
+            '${age != null ? ' ($age years old)' : ''}',
+        Icons.today_outlined,
+      );
+    }
+    if (person.nationality?.isNotEmpty == true) {
+      add(
+        'NATIONALITY',
+        CountryUtils.nameFromAlpha3(person.nationality!),
+        Icons.flag_outlined,
+      );
+    }
+    if (person.lastSeenLocation?.isNotEmpty == true) {
+      add('PLACE OF DISAPPEARANCE', person.lastSeenLocation!,
+          Icons.location_on_outlined);
+    }
+    if (person.lastSeenDate != null) {
+      final ageAt = _ageAt(person.birthDate, person.lastSeenDate!);
+      add(
+        'DATE OF DISAPPEARANCE',
+        '${DateFormat('dd/MM/yyyy').format(person.lastSeenDate!)}'
+            '${ageAt != null ? ' (When $ageAt years old)' : ''}',
+        Icons.schedule_outlined,
+      );
+    }
+    if (person.heightCm != null) {
+      add('HEIGHT', '${person.heightCm} cm', Icons.height_rounded);
+    }
+    if (person.weightKg != null) {
+      add('WEIGHT', '${person.weightKg} kg', Icons.monitor_weight_outlined);
+    }
+    if (person.eyeColor?.isNotEmpty == true) {
+      add('EYE COLOUR', person.eyeColor!, Icons.remove_red_eye_outlined);
+    }
+    if (person.hairColor?.isNotEmpty == true) {
+      debugPrint('Hair color = ${person.hairColor}');
+      add('HAIR COLOUR', person.hairColor!, Icons.face_outlined);
+    }
+    add('CASE ID', person.id, Icons.tag_rounded);
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -169,105 +269,24 @@ class _DetailContent extends StatelessWidget {
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
-        children: [
-          if (person.estimatedAge != null) ...[
-            DetailRow(
-              label: 'AGE',
-              value: '${person.estimatedAge} years old',
-              icon: Icons.cake_outlined,
-            ),
-            const DetailDivider(),
-          ],
-          if (person.birthDate != null) ...[
-            DetailRow(
-              label: 'DATE OF BIRTH',
-              value: DateFormat('dd MMM yyyy').format(person.birthDate!),
-              icon: Icons.today_outlined,
-            ),
-            const DetailDivider(),
-          ],
-          DetailRow(
-            label: 'SEX',
-            value: person.sex.label,
-            icon: Icons.person_outline_rounded,
-          ),
-          if (person.nationality != null) ...[
-            const DetailDivider(),
-            DetailRow(
-              label: 'NATIONALITY',
-              value: person.nationality!,
-              icon: Icons.flag_outlined,
-            ),
-          ],
-          if (person.heightCm != null) ...[
-            const DetailDivider(),
-            DetailRow(
-              label: 'HEIGHT',
-              value: '${person.heightCm} cm',
-              icon: Icons.height_rounded,
-            ),
-          ],
-          if (person.eyeColor != null) ...[
-            const DetailDivider(),
-            DetailRow(
-              label: 'EYE COLOUR',
-              value: person.eyeColor!,
-              icon: Icons.remove_red_eye_outlined,
-            ),
-          ],
-          if (person.hairColor != null) ...[
-            const DetailDivider(),
-            DetailRow(
-              label: 'HAIR COLOUR',
-              value: person.hairColor!,
-              icon: Icons.face_outlined,
-            ),
-          ],
-          if (person.lastSeenDate != null) ...[
-            const DetailDivider(),
-            DetailRow(
-              label: 'LAST SEEN',
-              value: DateFormat('dd MMM yyyy').format(person.lastSeenDate!),
-              icon: Icons.schedule_outlined,
-            ),
-          ],
-          if (person.lastSeenLocation != null) ...[
-            const DetailDivider(),
-            DetailRow(
-              label: 'LOCATION',
-              value: person.lastSeenLocation!,
-              icon: Icons.location_on_outlined,
-            ),
-          ],
-          const DetailDivider(),
-          DetailRow(
-            label: 'CASE ID',
-            value: person.id,
-            icon: Icons.tag_rounded,
-            isMonospace: true,
-          ),
-        ],
-      ),
+      child: Column(children: rows),
     );
   }
 
-  void _share(MissingPersonEntity person) {
-    final age =
-        person.estimatedAge != null ? ', ${person.estimatedAge} years old' : '';
-    final location = person.lastSeenLocation != null
-        ? '\nLast seen: ${person.lastSeenLocation}'
-        : '';
-    final url = person.externalUrl ?? '';
+  static String _tc(String s) => s
+      .split(' ')
+      .map((w) =>
+          w.isEmpty ? w : w[0].toUpperCase() + w.substring(1).toLowerCase())
+      .join(' ');
 
-    Share.share(
-      '🔴 MISSING PERSON\n\n'
-      '${person.name}$age\n'
-      '$location\n\n'
-      'If you have any information, please contact the authorities immediately.'
-      '${url.isNotEmpty ? '\n\n$url' : ''}',
-      subject: 'Missing Person: ${person.name}',
-    );
+  static int? _ageAt(DateTime? birth, DateTime at) {
+    if (birth == null) return null;
+    int a = at.year - birth.year;
+    if (at.month < birth.month ||
+        (at.month == birth.month && at.day < birth.day)) {
+      a--;
+    }
+    return a;
   }
 }
 
@@ -282,37 +301,31 @@ class _NameHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Source badge
         _SourceBadge(source: person.source),
         const SizedBox(height: 10),
-
-        // Name
-        Text(
-          person.name,
-          style: AppTextTheme.displaySmall,
-        ),
-
-        // Short meta
+        Text(person.name, style: AppTextTheme.displaySmall),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            if (person.estimatedAge != null) ...[
-              const Icon(Icons.cake_outlined,
-                  size: 14, color: AppColors.textMuted),
-              const SizedBox(width: 4),
-              Text('${person.estimatedAge} yrs', style: AppTextTheme.bodySmall),
-              const SizedBox(width: 12),
-            ],
-            if (person.nationality != null) ...[
-              const Icon(Icons.flag_outlined,
-                  size: 14, color: AppColors.textMuted),
-              const SizedBox(width: 4),
-              Text(person.nationality!, style: AppTextTheme.bodySmall),
-            ],
+        Row(children: [
+          if (person.estimatedAge != null) ...[
+            const Icon(Icons.cake_outlined,
+                size: 14, color: AppColors.textMuted),
+            const SizedBox(width: 4),
+            Text('${person.estimatedAge} yrs', style: AppTextTheme.bodySmall),
+            const SizedBox(width: 12),
           ],
-        ),
-
-        // Last seen chip
+          if (person.nationality != null) ...[
+            const Icon(Icons.flag_outlined,
+                size: 14, color: AppColors.textMuted),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                CountryUtils.nameFromAlpha3(person.nationality!),
+                style: AppTextTheme.bodySmall,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ]),
         if (person.lastSeenDate != null) ...[
           const SizedBox(height: 12),
           Container(
@@ -330,10 +343,9 @@ class _NameHeader extends StatelessWidget {
                     size: 13, color: AppColors.primaryLight),
                 const SizedBox(width: 6),
                 Text(
-                  'Last seen ${DateFormat('dd MMM yyyy').format(person.lastSeenDate!)}',
-                  style: AppTextTheme.labelMedium.copyWith(
-                    color: AppColors.primaryLight,
-                  ),
+                  'Disappeared ${DateFormat('dd/MM/yyyy').format(person.lastSeenDate!)}',
+                  style: AppTextTheme.labelMedium
+                      .copyWith(color: AppColors.primaryLight),
                 ),
               ],
             ),
@@ -364,17 +376,12 @@ class _SourceBadge extends StatelessWidget {
           'COMMUNITY'
         ),
     };
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        style: AppTextTheme.labelSmall.copyWith(color: fg, fontSize: 10),
-      ),
+      decoration:
+          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(4)),
+      child: Text(label,
+          style: AppTextTheme.labelSmall.copyWith(color: fg, fontSize: 10)),
     );
   }
 }
@@ -414,9 +421,7 @@ class _FactsList extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: Text(facts[i], style: AppTextTheme.bodyMedium),
-              ),
+              Expanded(child: Text(facts[i], style: AppTextTheme.bodyMedium)),
             ],
           ),
         ),
@@ -434,8 +439,7 @@ class _ContactsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: contacts.map((c) => _ContactTile(contact: c)).toList(),
-    );
+        children: contacts.map((c) => _ContactTile(contact: c)).toList());
   }
 }
 
@@ -453,12 +457,15 @@ class _ContactTile extends StatelessWidget {
     };
 
     return GestureDetector(
-      onTap: () => _launch(contact),
+      onTap: () => launchSafely(
+        contact.type.uriScheme.isNotEmpty
+            ? contact.type.uriScheme + contact.value
+            : contact.value,
+      ),
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: contact.value));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Copied to clipboard')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
@@ -468,44 +475,36 @@ class _ContactTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: AppColors.textSecondary),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(contact.label,
-                      style: AppTextTheme.labelMedium
-                          .copyWith(color: AppColors.textMuted)),
-                  const SizedBox(height: 2),
-                  Text(
-                    contact.value,
-                    style: AppTextTheme.bodyMedium.copyWith(
-                      color: contact.type.isLaunchable
-                          ? AppColors.primaryLight
-                          : AppColors.textPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+        child: Row(children: [
+          Icon(icon, size: 18, color: AppColors.textSecondary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(contact.label,
+                    style: AppTextTheme.labelMedium
+                        .copyWith(color: AppColors.textMuted)),
+                const SizedBox(height: 2),
+                Text(
+                  contact.value,
+                  style: AppTextTheme.bodyMedium.copyWith(
+                    color: contact.type.isLaunchable
+                        ? AppColors.primaryLight
+                        : AppColors.textPrimary,
                   ),
-                ],
-              ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            if (contact.type.isCallable || contact.type.isLaunchable)
-              const Icon(Icons.arrow_outward_rounded,
-                  size: 14, color: AppColors.textMuted),
-          ],
-        ),
+          ),
+          if (contact.type.isCallable || contact.type.isLaunchable)
+            const Icon(Icons.arrow_outward_rounded,
+                size: 14, color: AppColors.textMuted),
+        ]),
       ),
     );
-  }
-
-  Future<void> _launch(CaseContact contact) async {
-    final raw = contact.type.uriScheme + contact.value;
-    final uri = Uri.tryParse(raw.isNotEmpty ? raw : contact.value);
-    if (uri != null && await canLaunchUrl(uri)) launchUrl(uri);
   }
 }
 
@@ -517,62 +516,44 @@ class _ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // SOS
-        ElevatedButton.icon(
-          onPressed: () async {
-            final uri = Uri.parse(AppConstants.emergencyNumber);
-            if (await canLaunchUrl(uri)) launchUrl(uri);
-          },
-          icon: const Icon(Icons.sos_rounded, size: 18),
-          label: Text(context.l10n.sosCallEurope),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textOnRed,
-            minimumSize: const Size(double.infinity, 52),
-          ),
+    return Column(children: [
+      ElevatedButton.icon(
+        onPressed: () => launchSafely(AppConstants.emergencyNumber),
+        icon: const Icon(Icons.sos_rounded, size: 18),
+        label: Text(context.l10n.sosCallEurope),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.textOnRed,
+          minimumSize: const Size(double.infinity, 52),
         ),
+      ),
+      const SizedBox(height: 12),
+      OutlinedButton.icon(
+        onPressed: () => _share(person),
+        icon: const Icon(Icons.share_outlined, size: 16),
+        label: Text(context.l10n.shareCase),
+      ),
+      if (person.externalUrl != null) ...[
         const SizedBox(height: 12),
-
-        // Share
         OutlinedButton.icon(
-          onPressed: () => _share(context, person),
-          icon: const Icon(Icons.share_outlined, size: 16),
-          label: Text(context.l10n.shareCase),
+          onPressed: () => launchSafely(person.externalUrl!),
+          icon: const Icon(Icons.open_in_new_rounded, size: 16),
+          label: const Text('View on INTERPOL'),
         ),
-
-        // Interpol link
-        if (person.externalUrl != null) ...[
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: () async {
-              final uri = Uri.parse(person.externalUrl!);
-              if (await canLaunchUrl(uri)) {
-                launchUrl(uri, mode: LaunchMode.externalApplication);
-              }
-            },
-            icon: const Icon(Icons.open_in_new_rounded, size: 16),
-            label: const Text('View on INTERPOL'),
-          ),
-        ],
       ],
-    );
+    ]);
   }
 
-  void _share(BuildContext context, MissingPersonEntity person) {
+  void _share(MissingPersonEntity person) {
     final age =
         person.estimatedAge != null ? ', ${person.estimatedAge} yrs' : '';
-    final location = person.lastSeenLocation != null
-        ? '\nLast seen: ${person.lastSeenLocation}'
+    final loc = person.lastSeenLocation != null
+        ? '\nPlace of disappearance: ${person.lastSeenLocation}'
         : '';
     final url = person.externalUrl ?? '';
-
     Share.share(
-      '🔴 MISSING PERSON\n\n'
-      '${person.name}$age\n'
-      '$location\n\n'
-      'If you have any information, please contact the authorities.'
+      '🔴 MISSING PERSON\n\n${person.name}$age\n$loc\n\n'
+      'If you have any information, contact the authorities.'
       '${url.isNotEmpty ? '\n\n$url' : ''}',
       subject: 'Missing Person: ${person.name}',
     );
@@ -588,8 +569,7 @@ class _LoadingScaffold extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(backgroundColor: AppColors.background),
       body: const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
-      ),
+          child: CircularProgressIndicator(color: AppColors.primary)),
     );
   }
 }

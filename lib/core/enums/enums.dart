@@ -34,7 +34,8 @@ enum CaseStatus {
     }
   }
 
-  bool get isVisible => this == CaseStatus.approved || this == CaseStatus.pending;
+  bool get isVisible =>
+      this == CaseStatus.approved || this == CaseStatus.pending;
 }
 
 enum PersonSex {
@@ -76,11 +77,17 @@ enum PersonSex {
     }
   }
 
+  /// Parses the Interpol API sex_id field.
+  /// The API may return: "M", "F", "MALE", "FEMALE", "U", or null.
+  /// In some endpoints it may also come as "Male" / "Female" (title case).
   static PersonSex fromInterpolId(String? id) {
-    switch (id?.toUpperCase()) {
+    if (id == null || id.trim().isEmpty) return PersonSex.unknown;
+    switch (id.toUpperCase().trim()) {
       case 'M':
+      case 'MALE':
         return PersonSex.male;
       case 'F':
+      case 'FEMALE':
         return PersonSex.female;
       default:
         return PersonSex.unknown;

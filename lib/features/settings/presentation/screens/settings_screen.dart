@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/utils/url_launcher_util.dart';
 
 import '../../../../app/app.dart';
 import '../bloc/settings_bloc.dart';
@@ -80,7 +80,7 @@ class SettingsScreen extends StatelessWidget {
             subtitle: '112 — European emergency services',
             onTap: () async {
               final uri = Uri.parse(AppConstants.emergencyNumber);
-              if (await canLaunchUrl(uri)) launchUrl(uri);
+              await launchSafely(uri.toString());
             },
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -105,9 +105,7 @@ class SettingsScreen extends StatelessWidget {
             title: context.l10n.settingsPrivacy,
             onTap: () async {
               final uri = Uri.parse('https://www.anthropic.com/privacy');
-              if (await canLaunchUrl(uri)) {
-                launchUrl(uri, mode: LaunchMode.externalApplication);
-              }
+              await launchSafely(uri.toString());
             },
             trailing: const Icon(Icons.open_in_new_rounded,
                 size: 14, color: AppColors.textMuted),
@@ -124,9 +122,7 @@ class SettingsScreen extends StatelessWidget {
             onTap: () async {
               final uri = Uri.parse(
                   'https://www.interpol.int/en/How-we-work/Notices/Yellow-Notices');
-              if (await canLaunchUrl(uri)) {
-                launchUrl(uri, mode: LaunchMode.externalApplication);
-              }
+              await launchSafely(uri.toString());
             },
             trailing: const Icon(Icons.open_in_new_rounded,
                 size: 14, color: AppColors.textMuted),

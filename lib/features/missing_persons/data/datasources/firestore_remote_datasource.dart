@@ -47,34 +47,67 @@ class FirestoreRemoteDatasource implements IFirestoreRemoteDatasource {
     DocumentSnapshot? startAfter,
   }) async {
     try {
+      // ── Strategy: use a single simple query to avoid composite index
+      // requirements. Filtering by nationality or sex + orderBy on a
+      // different field requires a composite index in Firestore.
+      // We fetch approved cases ordered by date, then apply extra
+      // filters (nationality, sex, lastSeen) client-side.
+      // This is safe because community cases are few compared to Interpol.
       Query<Map<String, dynamic>> query = _cases
           .where('status', isEqualTo: 'approved')
           .orderBy('createdAt', descending: true)
-          .limit(filter.pageSize);
-
-      if (filter.nationalities.isNotEmpty) {
-        query = query.where('nationality', whereIn: filter.nationalities);
-      }
-
-      if (filter.sex != null && filter.sex != PersonSex.unknown) {
-        query = query.where('sex', isEqualTo: filter.sex!.interpolId);
-      }
-
-      if (filter.lastSeenAfter != null) {
-        query = query.where(
-          'lastSeenDate',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(filter.lastSeenAfter!),
-        );
-      }
+          .limit(filter.pageSize * 3); // fetch extra to allow client filtering
 
       if (startAfter != null) {
         query = query.startAfterDocument(startAfter);
       }
 
       final snapshot = await query.get();
-      return snapshot.docs.map(FirestoreCaseModel.fromDoc).toList();
+      var results = snapshot.docs.map(FirestoreCaseModel.fromDoc).toList();
+
+      // ── Client-side filters ──────────────────────────────────────────
+      if (filter.nationalities.isNotEmpty) {
+        results = results
+            .where((m) =>
+                m.nationality != null &&
+                filter.nationalities.contains(m.nationality))
+            .toList();
+      }
+
+      if (filter.sex != null && filter.sex != PersonSex.unknown) {
+        results = results
+            .where((m) => m.sexId == filter.sex!.interpolId)
+            .toList();
+      }
+
+      if (filter.lastSeenAfter != null) {
+        results = results
+            .where((m) =>
+                m.lastSeenDate != null &&
+                m.lastSeenDate!.toDate().isAfter(filter.lastSeenAfter!))
+            .toList();
+      }
+
+      if (filter.minAge != null || filter.maxAge != null) {
+        final now = DateTime.now();
+        results = results.where((m) {
+          if (m.birthDate == null) return true;
+          final age = now.year - m.birthDate!.toDate().year;
+          if (filter.minAge != null && age < filter.minAge!) return false;
+          if (filter.maxAge != null && age > filter.maxAge!) return false;
+          return true;
+        }).toList();
+      }
+
+      // Trim to actual page size after client filtering
+      if (results.length > filter.pageSize) {
+        results = results.take(filter.pageSize).toList();
+      }
+
+      return results;
     } on FirebaseException catch (e) {
-      throw ServerException(message: e.message ?? 'Firestore error', statusCode: null);
+      throw ServerException(
+          message: e.message ?? 'Firestore error', statusCode: null);
     } catch (e) {
       throw NetworkException(e.toString());
     }
@@ -85,7 +118,8 @@ class FirestoreRemoteDatasource implements IFirestoreRemoteDatasource {
     try {
       final doc = await _cases.doc(id).get();
       if (!doc.exists) {
-        throw const ServerException(message: 'Case not found.', statusCode: 404);
+        throw const ServerException(
+            message: 'Case not found.', statusCode: 404);
       }
       return FirestoreCaseModel.fromDoc(doc);
     } on ServerException {
@@ -102,16 +136,11 @@ class FirestoreRemoteDatasource implements IFirestoreRemoteDatasource {
     required List<String> localPhotoPaths,
   }) async {
     try {
-      // 1. Upload photos first
       final uploadedUrls = await _uploadPhotos(localPhotoPaths);
-
-      // 2. Build model with uploaded URLs
       final model = FirestoreCaseModel.fromEntity(
         entity.copyWith(photoUrls: uploadedUrls),
         userId,
       );
-
-      // 3. Write to Firestore
       final ref = await _cases.add(model.toFirestore());
       final doc = await ref.get();
       return FirestoreCaseModel.fromDoc(doc);
@@ -156,29 +185,23 @@ class FirestoreRemoteDatasource implements IFirestoreRemoteDatasource {
     });
   }
 
-  // --- Photo upload ---
+  // ── Photo upload ───────────────────────────────────────────────
 
   Future<List<String>> _uploadPhotos(List<String> localPaths) async {
     if (localPaths.isEmpty) return [];
-
     final futures = localPaths.asMap().entries.map((entry) async {
-      final path = entry.value;
-      final index = entry.key;
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = 'photo_${timestamp}_$index.jpg';
+      final fileName = 'photo_${timestamp}_${entry.key}.jpg';
       final ref = _storage
           .ref()
           .child(AppConstants.casePhotosPath)
           .child(fileName);
-
-      final file = File(path);
       final task = await ref.putFile(
-        file,
+        File(entry.value),
         SettableMetadata(contentType: 'image/jpeg'),
       );
-      return await task.ref.getDownloadURL();
+      return task.ref.getDownloadURL();
     });
-
     return Future.wait(futures);
   }
 }
