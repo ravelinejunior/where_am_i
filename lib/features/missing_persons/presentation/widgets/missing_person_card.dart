@@ -97,9 +97,9 @@ class MissingPersonCard extends StatelessWidget {
             ),
 
             // Chevron
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: const Icon(Icons.chevron_right_rounded,
+            const Padding(
+              padding: EdgeInsets.only(right: 12),
+              child: Icon(Icons.chevron_right_rounded,
                   size: 18, color: AppColors.textMuted),
             ),
           ],
@@ -118,9 +118,9 @@ class _PhotoSlot extends StatelessWidget {
     return Container(
       width: 88,
       height: 110,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.surfaceVariant,
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12),
           bottomLeft: Radius.circular(12),
         ),
