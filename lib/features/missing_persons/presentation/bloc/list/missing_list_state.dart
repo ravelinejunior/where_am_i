@@ -7,6 +7,8 @@ final class MissingListState extends Equatable {
   final List<MissingPersonEntity> persons;
   final MissingPersonFilter filter;
   final bool hasMore;
+  final int currentPage;
+  final bool hasReachedMax;
   final String? errorMessage;
 
   const MissingListState({
@@ -14,6 +16,8 @@ final class MissingListState extends Equatable {
     this.persons = const [],
     this.filter = const MissingPersonFilter(),
     this.hasMore = true,
+    this.currentPage = 1,
+    this.hasReachedMax = false,
     this.errorMessage,
   });
 
@@ -29,6 +33,8 @@ final class MissingListState extends Equatable {
     List<MissingPersonEntity>? persons,
     MissingPersonFilter? filter,
     bool? hasMore,
+    int? currentPage,
+    bool? hasReachedMax,
     String? errorMessage,
   }) {
     return MissingListState(
@@ -36,10 +42,20 @@ final class MissingListState extends Equatable {
       persons: persons ?? this.persons,
       filter: filter ?? this.filter,
       hasMore: hasMore ?? this.hasMore,
+      currentPage: currentPage ?? this.currentPage,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [status, persons, filter, hasMore, errorMessage];
+  List<Object?> get props => [
+        status,
+        persons,
+        filter,
+        hasMore,
+        currentPage,
+        hasReachedMax,
+        errorMessage
+      ];
 }

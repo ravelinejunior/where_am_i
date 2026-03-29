@@ -1,6 +1,12 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus { initial, loading, authenticated, unauthenticated }
+enum AuthStatus {
+  initial,
+  loading,
+  authenticated,
+  unauthenticated,
+  emailConfirmationRequired,
+}
 
 final class AuthState extends Equatable {
   final AuthStatus status;
@@ -18,6 +24,8 @@ final class AuthState extends Equatable {
   bool get isLoading => status == AuthStatus.loading;
   bool get isAuthenticated => status == AuthStatus.authenticated;
   bool get isUnauthenticated => status == AuthStatus.unauthenticated;
+  bool get needsEmailConfirmation =>
+      status == AuthStatus.emailConfirmationRequired;
 
   AuthState copyWith({
     AuthStatus? status,

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:where_am_i/features/auth/presentation/bloc/auth_bloc.dart';
 
-import '../bloc/auth_bloc.dart';
 import '../../../../../../core/di/injection.dart';
 import '../../../../../../core/router/route_names.dart';
 import '../../../../../../core/theme/theme.dart';
+import '../../../../../../app/app.dart';
 
 class LoginScreen extends StatelessWidget {
-  /// Route to navigate to after successful login.
   final String? redirectTo;
-
   const LoginScreen({super.key, this.redirectTo});
 
   @override
@@ -58,6 +57,7 @@ class _LoginViewState extends State<_LoginView>
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return BlocListener<AuthBloc, AuthState>(
       listenWhen: (p, c) => p.status != c.status,
       listener: (context, state) {
@@ -67,9 +67,7 @@ class _LoginViewState extends State<_LoginView>
         backgroundColor: AppColors.background,
         body: Stack(
           children: [
-            // Grid background
             Positioned.fill(child: CustomPaint(painter: _GridPainter())),
-
             SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -78,7 +76,6 @@ class _LoginViewState extends State<_LoginView>
                   children: [
                     const SizedBox(height: 24),
 
-                    // Back button
                     if (Navigator.of(context).canPop())
                       GestureDetector(
                         onTap: () => Navigator.of(context).pop(),
@@ -98,7 +95,6 @@ class _LoginViewState extends State<_LoginView>
 
                     const SizedBox(height: 40),
 
-                    // Header
                     Container(
                       width: 48,
                       height: 48,
@@ -110,20 +106,32 @@ class _LoginViewState extends State<_LoginView>
                           color: AppColors.textOnRed, size: 24),
                     ),
                     const SizedBox(height: 20),
-                    Text('Sign in to report', style: AppTextTheme.displaySmall),
+                    Text(l.loginTitle, style: AppTextTheme.displaySmall),
                     const SizedBox(height: 8),
                     Text(
-                      'An account is required to report a missing person.',
+                      l.loginSubtitle,
                       style: AppTextTheme.bodyMedium
                           .copyWith(color: AppColors.textSecondary),
                     ),
 
                     const SizedBox(height: 36),
 
+                    // Email confirmation banner
+                    BlocBuilder<AuthBloc, AuthState>(
+                      buildWhen: (p, c) => p.status != c.status,
+                      builder: (context, state) {
+                        if (!state.needsEmailConfirmation) {
+                          return const SizedBox.shrink();
+                        }
+                        return _SuccessBanner(
+                            message: l.loginEmailConfirmation);
+                      },
+                    ),
+
                     // Error banner
                     BlocBuilder<AuthBloc, AuthState>(
                       buildWhen: (p, c) => p.errorMessage != c.errorMessage,
-                      builder: (_, state) {
+                      builder: (context, state) {
                         if (state.errorMessage == null) {
                           return const SizedBox.shrink();
                         }
@@ -134,7 +142,7 @@ class _LoginViewState extends State<_LoginView>
                     // Success banner
                     BlocBuilder<AuthBloc, AuthState>(
                       buildWhen: (p, c) => p.successMessage != c.successMessage,
-                      builder: (_, state) {
+                      builder: (context, state) {
                         if (state.successMessage == null) {
                           return const SizedBox.shrink();
                         }
@@ -142,16 +150,14 @@ class _LoginViewState extends State<_LoginView>
                       },
                     ),
 
-                    // Google button
                     _GoogleButton(),
                     const SizedBox(height: 20),
 
-                    // Divider
                     Row(children: [
                       const Expanded(child: Divider(color: AppColors.divider)),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text('or',
+                        child: Text('ou',
                             style: AppTextTheme.bodySmall
                                 .copyWith(color: AppColors.textMuted)),
                       ),
@@ -159,7 +165,6 @@ class _LoginViewState extends State<_LoginView>
                     ]),
                     const SizedBox(height: 20),
 
-                    // Email tabs
                     Container(
                       decoration: BoxDecoration(
                         color: AppColors.surfaceVariant,
@@ -178,9 +183,9 @@ class _LoginViewState extends State<_LoginView>
                         labelStyle: AppTextTheme.labelLarge,
                         unselectedLabelStyle: AppTextTheme.labelLarge
                             .copyWith(color: AppColors.textMuted),
-                        tabs: const [
-                          Tab(text: 'Sign in'),
-                          Tab(text: 'Create account'),
+                        tabs: [
+                          Tab(text: l.loginSignIn),
+                          Tab(text: l.loginCreateAccount),
                         ],
                       ),
                     ),
@@ -209,65 +214,55 @@ class _LoginViewState extends State<_LoginView>
   }
 }
 
-// ── Google button ──────────────────────────────────────────────
-
 class _GoogleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return BlocBuilder<AuthBloc, AuthState>(
       buildWhen: (p, c) => p.isLoading != c.isLoading,
-      builder: (context, state) {
-        return OutlinedButton(
-          onPressed: state.isLoading
-              ? null
-              : () => context
-                  .read<AuthBloc>()
-                  .add(const AuthGoogleSignInRequested()),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 52),
-            side: const BorderSide(color: AppColors.border, width: 0.5),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Google G logo (inline SVG-like using text)
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Center(
-                  child: Text(
-                    'G',
+      builder: (context, state) => OutlinedButton(
+        onPressed: state.isLoading
+            ? null
+            : () =>
+                context.read<AuthBloc>().add(const AuthGoogleSignInRequested()),
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(double.infinity, 52),
+          side: const BorderSide(color: AppColors.border, width: 0.5),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Center(
+                child: Text('G',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF4285F4),
-                    ),
-                  ),
-                ),
+                    )),
               ),
-              const SizedBox(width: 12),
-              Text('Continue with Google',
-                  style: AppTextTheme.labelLarge
-                      .copyWith(color: AppColors.textPrimary)),
-            ],
-          ),
-        );
-      },
+            ),
+            const SizedBox(width: 12),
+            Text(l.loginGoogle,
+                style: AppTextTheme.labelLarge
+                    .copyWith(color: AppColors.textPrimary)),
+          ],
+        ),
+      ),
     );
   }
 }
 
-// ── Sign in form ───────────────────────────────────────────────
-
 class _SignInForm extends StatefulWidget {
   const _SignInForm();
-
   @override
   State<_SignInForm> createState() => _SignInFormState();
 }
@@ -287,6 +282,7 @@ class _SignInFormState extends State<_SignInForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Form(
       key: _formKey,
       child: Column(
@@ -300,22 +296,17 @@ class _SignInFormState extends State<_SignInForm> {
             onToggle: () => setState(() => _obscure = !_obscure),
           ),
           const SizedBox(height: 8),
-
-          // Forgot password
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () => _forgotPassword(context),
               style: TextButton.styleFrom(
                   padding: EdgeInsets.zero, minimumSize: const Size(0, 32)),
-              child: Text(
-                'Forgot password?',
-                style: AppTextTheme.labelMedium
-                    .copyWith(color: AppColors.primaryLight),
-              ),
+              child: Text(l.loginForgotPassword,
+                  style: AppTextTheme.labelMedium
+                      .copyWith(color: AppColors.primaryLight)),
             ),
           ),
-
           const SizedBox(height: 16),
           BlocBuilder<AuthBloc, AuthState>(
             buildWhen: (p, c) => p.isLoading != c.isLoading,
@@ -326,9 +317,8 @@ class _SignInFormState extends State<_SignInForm> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                          color: AppColors.textOnRed, strokeWidth: 2),
-                    )
-                  : const Text('Sign in'),
+                          color: AppColors.textOnRed, strokeWidth: 2))
+                  : Text(l.loginSignIn),
             ),
           ),
         ],
@@ -345,9 +335,10 @@ class _SignInFormState extends State<_SignInForm> {
   }
 
   void _forgotPassword(BuildContext context) {
+    final l = context.l10n;
     if (_emailCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Enter your email address first.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l.loginEmailLabel)));
       return;
     }
     context
@@ -356,11 +347,8 @@ class _SignInFormState extends State<_SignInForm> {
   }
 }
 
-// ── Sign up form ───────────────────────────────────────────────
-
 class _SignUpForm extends StatefulWidget {
   const _SignUpForm();
-
   @override
   State<_SignUpForm> createState() => _SignUpFormState();
 }
@@ -382,17 +370,18 @@ class _SignUpFormState extends State<_SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return Form(
       key: _formKey,
       child: Column(
         children: [
           _InputField(
             controller: _nameCtrl,
-            label: 'Full name',
-            hint: 'Maria Silva',
+            label: l.loginNameLabel,
+            hint: l.loginNameHint,
             keyboardType: TextInputType.name,
             validator: (v) =>
-                v == null || v.trim().isEmpty ? 'Name is required' : null,
+                v == null || v.trim().isEmpty ? 'Nome obrigatório' : null,
           ),
           const SizedBox(height: 12),
           _EmailField(controller: _emailCtrl),
@@ -412,9 +401,8 @@ class _SignUpFormState extends State<_SignUpForm> {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                          color: AppColors.textOnRed, strokeWidth: 2),
-                    )
-                  : const Text('Create account'),
+                          color: AppColors.textOnRed, strokeWidth: 2))
+                  : Text(l.loginCreateAccount),
             ),
           ),
         ],
@@ -431,8 +419,6 @@ class _SignUpFormState extends State<_SignUpForm> {
         ));
   }
 }
-
-// ── Reusable input fields ──────────────────────────────────────
 
 class _InputField extends StatelessWidget {
   final TextEditingController controller;
@@ -476,14 +462,15 @@ class _EmailField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return _InputField(
       controller: controller,
-      label: 'Email',
-      hint: 'you@example.com',
+      label: l.loginEmailLabel,
+      hint: l.loginEmailHint,
       keyboardType: TextInputType.emailAddress,
       validator: (v) {
-        if (v == null || v.trim().isEmpty) return 'Email is required';
-        if (!v.contains('@')) return 'Enter a valid email';
+        if (v == null || v.trim().isEmpty) return 'Email obrigatório';
+        if (!v.contains('@')) return 'Email inválido';
         return null;
       },
     );
@@ -503,9 +490,11 @@ class _PasswordField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     return _InputField(
       controller: controller,
-      label: 'Password',
+      label: l.loginPasswordLabel,
+      hint: l.loginPasswordHint,
       obscure: obscure,
       suffix: IconButton(
         icon: Icon(
@@ -516,15 +505,13 @@ class _PasswordField extends StatelessWidget {
         onPressed: onToggle,
       ),
       validator: (v) {
-        if (v == null || v.isEmpty) return 'Password is required';
-        if (v.length < 6) return 'Minimum 6 characters';
+        if (v == null || v.isEmpty) return 'Senha obrigatória';
+        if (v.length < 6) return 'Mínimo 6 caracteres';
         return null;
       },
     );
   }
 }
-
-// ── Banners ────────────────────────────────────────────────────
 
 class _ErrorBanner extends StatelessWidget {
   final String message;
@@ -541,18 +528,15 @@ class _ErrorBanner extends StatelessWidget {
         border: Border.all(
             color: AppColors.danger.withValues(alpha: 0.3), width: 0.5),
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline_rounded,
-              size: 16, color: AppColors.danger),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(message,
-                style:
-                    AppTextTheme.bodySmall.copyWith(color: AppColors.danger)),
-          ),
-        ],
-      ),
+      child: Row(children: [
+        const Icon(Icons.error_outline_rounded,
+            size: 16, color: AppColors.danger),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(message,
+              style: AppTextTheme.bodySmall.copyWith(color: AppColors.danger)),
+        ),
+      ]),
     );
   }
 }
@@ -572,23 +556,19 @@ class _SuccessBanner extends StatelessWidget {
         border: Border.all(
             color: AppColors.success.withValues(alpha: 0.3), width: 0.5),
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.check_circle_outline_rounded,
-              size: 16, color: AppColors.success),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(message,
-                style: AppTextTheme.bodySmall
-                    .copyWith(color: const Color(0xFF4CAF50))),
-          ),
-        ],
-      ),
+      child: Row(children: [
+        const Icon(Icons.check_circle_outline_rounded,
+            size: 16, color: AppColors.success),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(message,
+              style: AppTextTheme.bodySmall
+                  .copyWith(color: const Color(0xFF4CAF50))),
+        ),
+      ]),
     );
   }
 }
-
-// ── Grid background ────────────────────────────────────────────
 
 class _GridPainter extends CustomPainter {
   @override

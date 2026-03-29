@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:where_am_i/features/missing_persons/domain/entities/missing_person_entity.dart';
 
+import '../../../../../../app/app.dart';
 import '../../../../../../core/enums/enums.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../../../../core/utils/country_utils.dart';
@@ -87,7 +88,7 @@ class MissingPersonCard extends StatelessWidget {
                         const Icon(Icons.location_off_outlined,
                             size: 12, color: AppColors.textMuted),
                         const SizedBox(width: 4),
-                        Text('Location unknown',
+                        Text(context.l10n.locationUnknown,
                             style: AppTextTheme.caption
                                 .copyWith(color: AppColors.textMuted)),
                       ]),

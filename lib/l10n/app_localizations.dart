@@ -116,6 +116,12 @@ abstract class AppLocalizations {
   /// **'Search by name or location...'**
   String get searchHint;
 
+  /// No description provided for @casesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} cases found'**
+  String casesFound(int count);
+
   /// No description provided for @filterTitle.
   ///
   /// In en, this message translates to:
@@ -164,6 +170,36 @@ abstract class AppLocalizations {
   /// **'Clear all'**
   String get filterClear;
 
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get sortNewest;
+
+  /// No description provided for @sortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest first'**
+  String get sortOldest;
+
+  /// No description provided for @sortNameAZ.
+  ///
+  /// In en, this message translates to:
+  /// **'Name A–Z'**
+  String get sortNameAZ;
+
+  /// No description provided for @sortNameZA.
+  ///
+  /// In en, this message translates to:
+  /// **'Name Z–A'**
+  String get sortNameZA;
+
   /// No description provided for @sexMale.
   ///
   /// In en, this message translates to:
@@ -188,17 +224,53 @@ abstract class AppLocalizations {
   /// **'Last seen'**
   String get lastSeenLabel;
 
+  /// No description provided for @disappearedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Disappeared'**
+  String get disappearedLabel;
+
   /// No description provided for @ageLabel.
   ///
   /// In en, this message translates to:
   /// **'Age'**
   String get ageLabel;
 
+  /// No description provided for @yearsOld.
+  ///
+  /// In en, this message translates to:
+  /// **'{age} years old'**
+  String yearsOld(int age);
+
+  /// No description provided for @whenYearsOld.
+  ///
+  /// In en, this message translates to:
+  /// **'When {age} years old'**
+  String whenYearsOld(int age);
+
   /// No description provided for @heightLabel.
   ///
   /// In en, this message translates to:
   /// **'Height'**
   String get heightLabel;
+
+  /// No description provided for @cmHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'{cm} cm'**
+  String cmHeight(int cm);
+
+  /// No description provided for @weightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weightLabel;
+
+  /// No description provided for @kgWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'{kg} kg'**
+  String kgWeight(int kg);
 
   /// No description provided for @nationalityLabel.
   ///
@@ -212,6 +284,12 @@ abstract class AppLocalizations {
   /// **'Sex'**
   String get sexLabel;
 
+  /// No description provided for @genderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get genderLabel;
+
   /// No description provided for @caseIdLabel.
   ///
   /// In en, this message translates to:
@@ -223,6 +301,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source'**
   String get sourceLabel;
+
+  /// No description provided for @locationUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Location unknown'**
+  String get locationUnknown;
+
+  /// No description provided for @detailFamilyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Family name'**
+  String get detailFamilyName;
+
+  /// No description provided for @detailForename.
+  ///
+  /// In en, this message translates to:
+  /// **'Forename'**
+  String get detailForename;
+
+  /// No description provided for @detailGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get detailGender;
+
+  /// No description provided for @detailDOB.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get detailDOB;
+
+  /// No description provided for @detailNationality.
+  ///
+  /// In en, this message translates to:
+  /// **'Nationality'**
+  String get detailNationality;
+
+  /// No description provided for @detailPlaceDisapp.
+  ///
+  /// In en, this message translates to:
+  /// **'Place of disappearance'**
+  String get detailPlaceDisapp;
+
+  /// No description provided for @detailDateDisapp.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of disappearance'**
+  String get detailDateDisapp;
+
+  /// No description provided for @detailHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get detailHeight;
+
+  /// No description provided for @detailWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get detailWeight;
+
+  /// No description provided for @detailEyeColour.
+  ///
+  /// In en, this message translates to:
+  /// **'Eye colour'**
+  String get detailEyeColour;
+
+  /// No description provided for @detailHairColour.
+  ///
+  /// In en, this message translates to:
+  /// **'Hair colour'**
+  String get detailHairColour;
+
+  /// No description provided for @detailFamilyNameAtBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Family name at birth'**
+  String get detailFamilyNameAtBirth;
 
   /// No description provided for @detailFacts.
   ///
@@ -242,6 +398,24 @@ abstract class AppLocalizations {
   /// **'Photos'**
   String get detailPhotos;
 
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copiedToClipboard;
+
+  /// No description provided for @couldNotOpenLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open link.'**
+  String get couldNotOpenLink;
+
+  /// No description provided for @viewOnInterpol.
+  ///
+  /// In en, this message translates to:
+  /// **'View on INTERPOL'**
+  String get viewOnInterpol;
+
   /// No description provided for @shareCase.
   ///
   /// In en, this message translates to:
@@ -254,6 +428,12 @@ abstract class AppLocalizations {
   /// **'Report a missing person'**
   String get reportCase;
 
+  /// No description provided for @missingPersonShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'🔴 MISSING PERSON\n\n{name}\nPlace of disappearance: {location}\n\nIf you have any information, contact the authorities.'**
+  String missingPersonShareText(String name, String location);
+
   /// No description provided for @sosTitle.
   ///
   /// In en, this message translates to:
@@ -263,7 +443,7 @@ abstract class AppLocalizations {
   /// No description provided for @sosCallEurope.
   ///
   /// In en, this message translates to:
-  /// **'Call 112 (Europe)'**
+  /// **'SOS — Call 112 (Europe)'**
   String get sosCallEurope;
 
   /// No description provided for @sosDescription.
@@ -326,17 +506,125 @@ abstract class AppLocalizations {
   /// **'Password reset email sent.'**
   String get loginPasswordResetSent;
 
+  /// No description provided for @loginEmailConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created! Check your email to confirm before signing in.'**
+  String get loginEmailConfirmation;
+
+  /// No description provided for @loginEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get loginEmailLabel;
+
+  /// No description provided for @loginPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get loginPasswordLabel;
+
+  /// No description provided for @loginNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get loginNameLabel;
+
+  /// No description provided for @loginNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Maria Silva'**
+  String get loginNameHint;
+
+  /// No description provided for @loginEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'your@email.com'**
+  String get loginEmailHint;
+
+  /// No description provided for @loginPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum 6 characters'**
+  String get loginPasswordHint;
+
+  /// No description provided for @loginNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get loginNoAccount;
+
+  /// No description provided for @loginHasAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get loginHasAccount;
+
+  /// No description provided for @loginSignUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get loginSignUp;
+
   /// No description provided for @reportTitle.
   ///
   /// In en, this message translates to:
   /// **'Report a missing person'**
   String get reportTitle;
 
+  /// No description provided for @reportPendingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get reportPendingBadge;
+
+  /// No description provided for @reportPendingNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report will be reviewed before it appears publicly. Only share verified information.'**
+  String get reportPendingNotice;
+
   /// No description provided for @reportName.
   ///
   /// In en, this message translates to:
-  /// **'Full name'**
+  /// **'Full name *'**
   String get reportName;
+
+  /// No description provided for @reportNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Maria da Silva'**
+  String get reportNameHint;
+
+  /// No description provided for @reportNameError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get reportNameError;
+
+  /// No description provided for @reportNationality.
+  ///
+  /// In en, this message translates to:
+  /// **'Nationality'**
+  String get reportNationality;
+
+  /// No description provided for @reportNationalitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ISO code, e.g. BR, PT, AO'**
+  String get reportNationalitySubtitle;
+
+  /// No description provided for @reportNationalityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'BR'**
+  String get reportNationalityHint;
+
+  /// No description provided for @reportSex.
+  ///
+  /// In en, this message translates to:
+  /// **'Sex'**
+  String get reportSex;
 
   /// No description provided for @reportDOB.
   ///
@@ -347,20 +635,32 @@ abstract class AppLocalizations {
   /// No description provided for @reportLastSeen.
   ///
   /// In en, this message translates to:
-  /// **'Last seen date'**
+  /// **'Date of disappearance *'**
   String get reportLastSeen;
+
+  /// No description provided for @reportLastSeenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select the disappearance date'**
+  String get reportLastSeenError;
 
   /// No description provided for @reportLastLocation.
   ///
   /// In en, this message translates to:
-  /// **'Last known location'**
+  /// **'Place of disappearance *'**
   String get reportLastLocation;
 
-  /// No description provided for @reportSex.
+  /// No description provided for @reportLastLocationHint.
   ///
   /// In en, this message translates to:
-  /// **'Sex'**
-  String get reportSex;
+  /// **'e.g. Lisbon, Portugal'**
+  String get reportLastLocationHint;
+
+  /// No description provided for @reportLastLocationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a location'**
+  String get reportLastLocationError;
 
   /// No description provided for @reportHeight.
   ///
@@ -368,11 +668,35 @@ abstract class AppLocalizations {
   /// **'Height (cm)'**
   String get reportHeight;
 
-  /// No description provided for @reportNationality.
+  /// No description provided for @reportHeightHint.
   ///
   /// In en, this message translates to:
-  /// **'Nationality'**
-  String get reportNationality;
+  /// **'170'**
+  String get reportHeightHint;
+
+  /// No description provided for @reportEyeColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Eye colour'**
+  String get reportEyeColor;
+
+  /// No description provided for @reportEyeColorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Brown, Blue, Green'**
+  String get reportEyeColorHint;
+
+  /// No description provided for @reportHairColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Hair colour'**
+  String get reportHairColor;
+
+  /// No description provided for @reportHairColorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Black, Blonde, Brown'**
+  String get reportHairColorHint;
 
   /// No description provided for @reportFacts.
   ///
@@ -404,11 +728,11 @@ abstract class AppLocalizations {
   /// **'Submit report'**
   String get reportSubmit;
 
-  /// No description provided for @reportPendingNotice.
+  /// No description provided for @reportSubmitting.
   ///
   /// In en, this message translates to:
-  /// **'Your report will be reviewed before publication. Only share verified information.'**
-  String get reportPendingNotice;
+  /// **'Submitting...'**
+  String get reportSubmitting;
 
   /// No description provided for @reportSuccess.
   ///
@@ -482,6 +806,18 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get settingsLanguage;
 
+  /// No description provided for @settingsLanguagePT.
+  ///
+  /// In en, this message translates to:
+  /// **'Portuguese'**
+  String get settingsLanguagePT;
+
+  /// No description provided for @settingsLanguageEN.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEN;
+
   /// No description provided for @settingsEmergency.
   ///
   /// In en, this message translates to:
@@ -524,6 +860,30 @@ abstract class AppLocalizations {
   /// **'Sign out'**
   String get settingsSignOut;
 
+  /// No description provided for @settingsNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotifications;
+
+  /// No description provided for @settingsNewCases.
+  ///
+  /// In en, this message translates to:
+  /// **'New cases'**
+  String get settingsNewCases;
+
+  /// No description provided for @settingsVerifiedAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified account'**
+  String get settingsVerifiedAccount;
+
+  /// No description provided for @settingsNotSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in'**
+  String get settingsNotSignedIn;
+
   /// No description provided for @adminTitle.
   ///
   /// In en, this message translates to:
@@ -545,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminApprove.
   ///
   /// In en, this message translates to:
-  /// **'Approve & publish'**
+  /// **'Approve'**
   String get adminApprove;
 
   /// No description provided for @adminReject.
@@ -637,24 +997,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go back'**
   String get goBack;
-
-  /// No description provided for @yearsOld.
-  ///
-  /// In en, this message translates to:
-  /// **'{age} years old'**
-  String yearsOld(int age);
-
-  /// No description provided for @cmHeight.
-  ///
-  /// In en, this message translates to:
-  /// **'{cm} cm'**
-  String cmHeight(int cm);
-
-  /// No description provided for @casesFound.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} cases found'**
-  String casesFound(int count);
 }
 
 class _AppLocalizationsDelegate

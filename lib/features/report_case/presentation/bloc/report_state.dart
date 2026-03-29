@@ -13,6 +13,8 @@ final class ReportState extends Equatable {
   final String lastSeenLocation;
   final PersonSex sex;
   final String height;
+  final String eyeColor;
+  final String hairColor;
   final String facts;
   final List<String> localPhotoPaths;
 
@@ -29,6 +31,8 @@ final class ReportState extends Equatable {
     this.lastSeenLocation = '',
     this.sex = PersonSex.unknown,
     this.height = '',
+    this.eyeColor = '',
+    this.hairColor = '',
     this.facts = '',
     this.localPhotoPaths = const [],
     this.showErrors = false,
@@ -38,7 +42,6 @@ final class ReportState extends Equatable {
   bool get isSubmitting => status == ReportStatus.loading;
   bool get isSuccess => status == ReportStatus.success;
 
-  // Validation
   bool get nameValid => name.trim().length >= 2;
   bool get lastSeenDateValid => lastSeenDate != null;
   bool get lastSeenLocationValid => lastSeenLocation.trim().length >= 3;
@@ -54,6 +57,8 @@ final class ReportState extends Equatable {
     String? lastSeenLocation,
     PersonSex? sex,
     String? height,
+    String? eyeColor,
+    String? hairColor,
     String? facts,
     List<String>? localPhotoPaths,
     bool? showErrors,
@@ -67,24 +72,35 @@ final class ReportState extends Equatable {
       name: name ?? this.name,
       nationality: nationality ?? this.nationality,
       birthDate: clearBirthDate ? null : (birthDate ?? this.birthDate),
-      lastSeenDate: clearLastSeenDate
-          ? null
-          : (lastSeenDate ?? this.lastSeenDate),
+      lastSeenDate:
+          clearLastSeenDate ? null : (lastSeenDate ?? this.lastSeenDate),
       lastSeenLocation: lastSeenLocation ?? this.lastSeenLocation,
       sex: sex ?? this.sex,
       height: height ?? this.height,
+      eyeColor: eyeColor ?? this.eyeColor,
+      hairColor: hairColor ?? this.hairColor,
       facts: facts ?? this.facts,
       localPhotoPaths: localPhotoPaths ?? this.localPhotoPaths,
       showErrors: showErrors ?? this.showErrors,
-      errorMessage:
-          clearError ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
   @override
   List<Object?> get props => [
-        status, name, nationality, birthDate, lastSeenDate,
-        lastSeenLocation, sex, height, facts, localPhotoPaths,
-        showErrors, errorMessage,
+        status,
+        name,
+        nationality,
+        birthDate,
+        lastSeenDate,
+        lastSeenLocation,
+        sex,
+        height,
+        eyeColor,
+        hairColor,
+        facts,
+        localPhotoPaths,
+        showErrors,
+        errorMessage,
       ];
 }

@@ -1,5 +1,4 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/error/failures.dart' hide AuthException;
 
 abstract interface class IAuthRemoteDatasource {
   User? get currentUser;

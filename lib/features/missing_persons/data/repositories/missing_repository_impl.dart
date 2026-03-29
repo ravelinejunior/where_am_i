@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../domain/entities/missing_person_entity.dart';
 import '../../domain/repositories/i_missing_person_repository.dart';
 import '../../domain/value_objects/missing_person_filter.dart';
@@ -5,7 +7,6 @@ import '../../domain/value_objects/paginated_result.dart';
 import '../datasources/interpol_remote_datasource.dart';
 import '../datasources/supabase_remote_datasource.dart';
 import '../../../../core/enums/enums.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/failures.dart';
 
 class MissingRepositoryImpl implements IMissingPersonRepository {
@@ -19,9 +20,8 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
         _supabase = firestore;
 
   @override
-  Future<(PaginatedResult<MissingPersonEntity>?, Failure?)> getMissingPersons({
-    required MissingPersonFilter filter,
-  }) async {
+  Future<(PaginatedResult<MissingPersonEntity>?, Failure?)> getMissingPersons(
+      {required MissingPersonFilter filter}) async {
     final results = <MissingPersonEntity>[];
     Failure? lastFailure;
 
@@ -96,8 +96,7 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
     required MissingPersonEntity person,
     required List<String> localPhotoPaths,
   }) async {
-    // Get real user ID from Supabase auth session
-    // reported_by is nullable in DB — allow unauthenticated reports (pending review)
+    // Get userId from current Supabase session
     final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
     try {
       final model = await _supabase.createCase(
@@ -144,8 +143,10 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
 
   @override
   Stream<MissingPersonEntity?> watchCase(String firestoreId) {
-    return _supabase.watchCase(firestoreId).map((model) => model?.toEntity());
+    return _supabase.watchCase(firestoreId).map((m) => m?.toEntity());
   }
+
+  // ── Private helpers ───────────────────────────────────────────
 
   Future<(List<MissingPersonEntity>?, Failure?)> _fetchInterpol(
       MissingPersonFilter filter) async {

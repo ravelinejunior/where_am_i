@@ -34,10 +34,12 @@ class ReportMissingPerson
 
 class ReportMissingPersonParams {
   final MissingPersonEntity person;
+  final String userId;
   final List<String> localPhotoPaths;
 
   const ReportMissingPersonParams({
     required this.person,
+    this.userId = '',
     this.localPhotoPaths = const [],
   });
 }

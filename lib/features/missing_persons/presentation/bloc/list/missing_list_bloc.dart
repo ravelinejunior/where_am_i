@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/missing_person_entity.dart';
 import '../../../domain/usecases/get_missing_persons.dart';
 import '../../../domain/value_objects/missing_person_filter.dart';
-
 import '../../../../../../core/enums/enums.dart';
 
 part 'missing_list_event.dart';
@@ -27,6 +26,16 @@ class MissingListBloc extends Bloc<MissingListEvent, MissingListState> {
     on<MissingListFilterChanged>(_onFilterChanged);
     on<MissingListFilterCleared>(_onFilterCleared);
     on<MissingListSortChanged>(_onSortChanged);
+    on<MissingListRefreshed>((_, emit) async {
+      emit(state.copyWith(
+        status: MissingListStatus.initial,
+        persons: [],
+        hasMore: true,
+        currentPage: 1,
+        hasReachedMax: false,
+      ));
+      add(const MissingListFetched());
+    });
   }
 
   // ── Handlers ──────────────────────────────────────────────────

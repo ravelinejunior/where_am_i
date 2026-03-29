@@ -2,11 +2,11 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:where_am_i/features/auth/presentation/bloc/auth_bloc.dart';
 
 import '../../features/auth/data/datasources/supabase_auth_datasource.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/i_auth_repository.dart';
-import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/missing_persons/data/datasources/interpol_remote_datasource.dart';
 import '../../features/missing_persons/data/datasources/supabase_remote_datasource.dart';
 import '../../features/missing_persons/data/repositories/missing_repository_impl.dart';

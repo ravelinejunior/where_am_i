@@ -48,3 +48,7 @@ final class MissingListSortChanged extends MissingListEvent {
   @override
   List<Object?> get props => [order];
 }
+
+final class MissingListRefreshed extends MissingListEvent {
+  const MissingListRefreshed();
+}

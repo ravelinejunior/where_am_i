@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-
 import 'package:where_am_i/features/missing_persons/domain/entities/missing_person_entity.dart';
 
 import '../bloc/detail/missing_detail_bloc.dart';
@@ -96,7 +95,7 @@ class _DetailContent extends StatelessWidget {
                   const SizedBox(height: 24),
                   _InfoCard(person: person),
                   if (person.facts.isNotEmpty) ...[
-                    const DetailSectionTitle(title: 'Case details'),
+                    const DetailSectionTitle(title: 'Detalhes do caso'),
                     _FactsList(
                         facts: person.facts
                             .where(
@@ -104,7 +103,7 @@ class _DetailContent extends StatelessWidget {
                             .toList()),
                   ],
                   if (person.contacts.isNotEmpty) ...[
-                    const DetailSectionTitle(title: 'Contacts'),
+                    const DetailSectionTitle(title: 'Contatos'),
                     _ContactsList(contacts: person.contacts),
                   ],
                   const SizedBox(height: 24),
@@ -188,6 +187,7 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final rows = <Widget>[];
     bool first = true;
 
@@ -199,11 +199,12 @@ class _InfoCard extends StatelessWidget {
 
     // Mirror interpol.int "Identity particulars" order
     if (person.surname?.isNotEmpty == true) {
-      add('FAMILY NAME', person.surname!.toUpperCase(),
+      add(l.detailFamilyName.toUpperCase(), person.surname!.toUpperCase(),
           Icons.person_outline_rounded);
     }
     if (person.forename?.isNotEmpty == true) {
-      add('FORENAME', _tc(person.forename!), Icons.badge_outlined);
+      add(l.detailForename.toUpperCase(), _tc(person.forename!),
+          Icons.badge_outlined);
     }
     // Family name at birth — shown only if different from family name
     // (comes from facts list for Interpol cases)
@@ -212,16 +213,17 @@ class _InfoCard extends StatelessWidget {
         .map((f) => f.replaceFirst('Family name at birth: ', ''))
         .firstOrNull;
     if (familyAtBirth != null) {
-      add('FAMILY NAME AT BIRTH', familyAtBirth, Icons.history_edu_outlined);
+      add(l.detailFamilyNameAtBirth.toUpperCase(), familyAtBirth,
+          Icons.history_edu_outlined);
     }
     // Only show gender row if we have a value (detail fetch may not have arrived yet)
     if (person.sex != PersonSex.unknown) {
-      add('GENDER', person.sex.label, Icons.wc_outlined);
+      add('SEXO', person.sex.label, Icons.wc_outlined);
     }
     if (person.birthDate != null) {
       final age = person.estimatedAge;
       add(
-        'DATE OF BIRTH',
+        'DATA DE NASC.',
         '${DateFormat('dd/MM/yyyy').format(person.birthDate!)}'
             '${age != null ? ' ($age years old)' : ''}',
         Icons.today_outlined,
@@ -229,38 +231,41 @@ class _InfoCard extends StatelessWidget {
     }
     if (person.nationality?.isNotEmpty == true) {
       add(
-        'NATIONALITY',
+        'NACIONALIDADE',
         CountryUtils.nameFromAlpha3(person.nationality!),
         Icons.flag_outlined,
       );
     }
     if (person.lastSeenLocation?.isNotEmpty == true) {
-      add('PLACE OF DISAPPEARANCE', person.lastSeenLocation!,
+      add(l.detailPlaceDisapp.toUpperCase(), person.lastSeenLocation!,
           Icons.location_on_outlined);
     }
     if (person.lastSeenDate != null) {
       final ageAt = _ageAt(person.birthDate, person.lastSeenDate!);
       add(
-        'DATE OF DISAPPEARANCE',
+        'DATA DO DESAP.',
         '${DateFormat('dd/MM/yyyy').format(person.lastSeenDate!)}'
             '${ageAt != null ? ' (When $ageAt years old)' : ''}',
         Icons.schedule_outlined,
       );
     }
     if (person.heightCm != null) {
-      add('HEIGHT', '${person.heightCm} cm', Icons.height_rounded);
+      add(l.detailHeight.toUpperCase(), '${person.heightCm} cm',
+          Icons.height_rounded);
     }
     if (person.weightKg != null) {
-      add('WEIGHT', '${person.weightKg} kg', Icons.monitor_weight_outlined);
+      add(l.detailWeight.toUpperCase(), '${person.weightKg} kg',
+          Icons.monitor_weight_outlined);
     }
     if (person.eyeColor?.isNotEmpty == true) {
-      add('EYE COLOUR', person.eyeColor!, Icons.remove_red_eye_outlined);
+      add(l.detailEyeColour.toUpperCase(), person.eyeColor!,
+          Icons.remove_red_eye_outlined);
     }
     if (person.hairColor?.isNotEmpty == true) {
-      debugPrint('Hair color = ${person.hairColor}');
-      add('HAIR COLOUR', person.hairColor!, Icons.face_outlined);
+      add(l.detailHairColour.toUpperCase(), person.hairColor!,
+          Icons.face_outlined);
     }
-    add('CASE ID', person.id, Icons.tag_rounded);
+    add(l.caseIdLabel.toUpperCase(), person.id, Icons.tag_rounded);
 
     return Container(
       decoration: BoxDecoration(
@@ -465,7 +470,7 @@ class _ContactTile extends StatelessWidget {
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: contact.value));
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+            .showSnackBar(const SnackBar(content: Text('Copiado')));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
@@ -538,7 +543,7 @@ class _ActionButtons extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => launchSafely(person.externalUrl!),
           icon: const Icon(Icons.open_in_new_rounded, size: 16),
-          label: const Text('View on INTERPOL'),
+          label: const Text('Ver na INTERPOL'),
         ),
       ],
     ]);
@@ -553,7 +558,7 @@ class _ActionButtons extends StatelessWidget {
     final url = person.externalUrl ?? '';
     Share.share(
       '🔴 MISSING PERSON\n\n${person.name}$age\n$loc\n\n'
-      'If you have any information, contact the authorities.'
+      'Se tiver informações, contacte as autoridades.'
       '${url.isNotEmpty ? '\n\n$url' : ''}',
       subject: 'Missing Person: ${person.name}',
     );

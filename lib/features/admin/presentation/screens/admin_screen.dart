@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:where_am_i/features/auth/presentation/bloc/auth_bloc.dart';
 
 import '../bloc/admin_bloc.dart';
 import '../widgets/admin_case_card.dart';
 import '../../../missing_persons/presentation/widgets/empty_state.dart';
 import '../../../missing_persons/presentation/widgets/missing_person_card_shimmer.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
+
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme/theme.dart';
 
@@ -50,7 +51,8 @@ class _AdminView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AdminBloc, AdminState>(
-      listenWhen: (p, c) => c.lastActionMessage != null &&
+      listenWhen: (p, c) =>
+          c.lastActionMessage != null &&
           p.lastActionMessage != c.lastActionMessage,
       listener: (context, state) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -78,10 +80,8 @@ class _AdminView extends StatelessWidget {
               return ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: 4,
-                separatorBuilder: (_, __) =>
-                    const SizedBox(height: 12),
-                itemBuilder: (_, __) =>
-                    const MissingPersonCardShimmer(),
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (_, __) => const MissingPersonCardShimmer(),
               );
             }
 
@@ -109,28 +109,22 @@ class _AdminView extends StatelessWidget {
               color: AppColors.primary,
               backgroundColor: AppColors.surface,
               onRefresh: () async {
-                context
-                    .read<AdminBloc>()
-                    .add(const AdminPendingCasesLoaded());
-                await Future.delayed(
-                    const Duration(milliseconds: 600));
+                context.read<AdminBloc>().add(const AdminPendingCasesLoaded());
+                await Future.delayed(const Duration(milliseconds: 600));
               },
               child: ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: state.cases.length,
-                separatorBuilder: (_, __) =>
-                    const SizedBox(height: 12),
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, i) {
                   final person = state.cases[i];
                   final id = person.firestoreId ?? person.id;
                   return AdminCaseCard(
                     person: person,
                     isProcessing: state.isProcessing(id),
-                    onApprove: () => context
-                        .read<AdminBloc>()
-                        .add(AdminCaseApproved(id)),
-                    onReject: () =>
-                        _confirmReject(context, id, person.name),
+                    onApprove: () =>
+                        context.read<AdminBloc>().add(AdminCaseApproved(id)),
+                    onReject: () => _confirmReject(context, id, person.name),
                   );
                 },
               ),
@@ -141,16 +135,13 @@ class _AdminView extends StatelessWidget {
     );
   }
 
-  void _confirmReject(
-      BuildContext context, String id, String name) {
+  void _confirmReject(BuildContext context, String id, String name) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
-        title: Text('Reject case?',
-            style: AppTextTheme.headlineSmall),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Reject case?', style: AppTextTheme.headlineSmall),
         content: Text(
           'This will reject the report for "$name". The submitter will not be notified.',
           style: AppTextTheme.bodyMedium,
@@ -168,8 +159,8 @@ class _AdminView extends StatelessWidget {
               context.read<AdminBloc>().add(AdminCaseRejected(id));
             },
             child: Text('Reject',
-                style: AppTextTheme.labelLarge
-                    .copyWith(color: AppColors.danger)),
+                style:
+                    AppTextTheme.labelLarge.copyWith(color: AppColors.danger)),
           ),
         ],
       ),

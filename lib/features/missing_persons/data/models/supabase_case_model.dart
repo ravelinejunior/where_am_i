@@ -51,6 +51,8 @@ class SupabaseCaseModel {
   final String? lastSeenLocation;
   final String sex;
   final int? heightCm;
+  final String? eyeColor;
+  final String? hairColor;
   final List<String> photoUrls;
   final List<String> facts;
   final List<Map<String, dynamic>> contacts;
@@ -69,6 +71,8 @@ class SupabaseCaseModel {
     this.lastSeenLocation,
     this.sex = 'U',
     this.heightCm,
+    this.eyeColor,
+    this.hairColor,
     this.photoUrls = const [],
     this.facts = const [],
     this.contacts = const [],
@@ -93,6 +97,8 @@ class SupabaseCaseModel {
       lastSeenLocation: row['last_seen_location'] as String?,
       sex: row['sex'] as String? ?? 'U',
       heightCm: (row['height_cm'] as num?)?.toInt(),
+      eyeColor: row['eye_color'] as String?,
+      hairColor: row['hair_color'] as String?,
       photoUrls: _parseStringList(row['photo_urls']),
       facts: _parseStringList(row['facts']),
       contacts: _parseContactList(row['contacts']),
@@ -135,11 +141,13 @@ class SupabaseCaseModel {
       if (lastSeenLocation != null) 'last_seen_location': lastSeenLocation,
       'sex': safeSex,
       if (heightCm != null) 'height_cm': heightCm,
+      if (eyeColor != null && eyeColor!.isNotEmpty) 'eye_color': eyeColor,
+      if (hairColor != null && hairColor!.isNotEmpty) 'hair_color': hairColor,
       'photo_urls': photoUrls,
       'facts': facts,
       'contacts': contacts,
       'source': safeSource,
-      'status': status,
+      'status': 'pending', // always pending — admin approves
       if (safeReportedBy != null) 'reported_by': safeReportedBy,
     };
   }
@@ -155,6 +163,8 @@ class SupabaseCaseModel {
       lastSeenLocation: lastSeenLocation,
       sex: PersonSex.fromFirestore(sex),
       heightCm: heightCm,
+      eyeColor: eyeColor,
+      hairColor: hairColor,
       photoUrls: photoUrls,
       facts: facts,
       contacts: contacts.map(_mapContact).toList(),
@@ -176,6 +186,8 @@ class SupabaseCaseModel {
       lastSeenLocation: entity.lastSeenLocation,
       sex: entity.sex.interpolId ?? 'U',
       heightCm: entity.heightCm,
+      eyeColor: entity.eyeColor,
+      hairColor: entity.hairColor,
       photoUrls: entity.photoUrls,
       facts: entity.facts,
       contacts: entity.contacts

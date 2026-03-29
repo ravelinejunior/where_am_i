@@ -88,8 +88,8 @@ class _MissingListViewState extends State<_MissingListView> {
                   onRefresh: () async {
                     context
                         .read<MissingListBloc>()
-                        .add(const MissingListFetched());
-                    await Future.delayed(const Duration(milliseconds: 800));
+                        .add(const MissingListRefreshed());
+                    await Future.delayed(const Duration(milliseconds: 1000));
                   },
                   child: _buildBody(context, state),
                 );
@@ -230,8 +230,16 @@ class _TopBar extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline_rounded,
                       size: 20, color: AppColors.primaryLight),
-                  tooltip: 'Report a missing person',
-                  onPressed: () => context.pushNamed(RouteNames.reportCaseName),
+                  tooltip: 'Reportar desaparecido',
+                  onPressed: () =>
+                      context.pushNamed(RouteNames.reportCaseName).then((_) {
+                    // Refresh list when returning from report screen
+                    if (context.mounted) {
+                      context
+                          .read<MissingListBloc>()
+                          .add(const MissingListRefreshed());
+                    }
+                  }),
                 ),
                 IconButton(
                   icon: const Icon(Icons.settings_outlined, size: 20),
