@@ -4,12 +4,14 @@ abstract class Failure {
 }
 
 class NetworkFailure extends Failure {
-  const NetworkFailure([super.message = 'Network error. Check your connection.']);
+  const NetworkFailure(
+      [super.message = 'Network error. Check your connection.']);
 }
 
 class ServerFailure extends Failure {
   final int? statusCode;
-  const ServerFailure({String message = 'Server error.', this.statusCode}) : super(message);
+  const ServerFailure({String message = 'Server error.', this.statusCode})
+      : super(message);
 }
 
 class NotFoundFailure extends Failure {

@@ -20,11 +20,9 @@ dependencies:
   # Navigation
   go_router: ^14.8.1
 
-  # Firebase
-  firebase_core: ^3.13.0
-  cloud_firestore: ^5.6.7
-  firebase_storage: ^12.4.5
-  firebase_auth: ^5.5.2
+  # Backend
+
+  supabase_flutter: ^2.8.4
 
   # UI & Fonts
   cupertino_icons: ^1.0.8
@@ -32,10 +30,9 @@ dependencies:
   cached_network_image: ^3.4.1
 
   # HTTP
-  http:
-    ^1.2.2
+  http: ^1.2.2
 
-    # Dependency injection
+  # Dependency injection
   get_it: ^8.0.3
 
   # Utils
@@ -43,7 +40,6 @@ dependencies:
   url_launcher: ^6.3.1
   share_plus: ^10.1.4
   image_picker: ^1.1.2
-  google_sign_in: ^6.2.2
   shared_preferences: ^2.3.4
 
 dev_dependencies:

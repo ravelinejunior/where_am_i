@@ -19,24 +19,20 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   })  : _reportMissingPerson = reportMissingPerson,
         _userId = userId,
         super(const ReportState()) {
-    on<ReportNameChanged>((e, emit) =>
-        emit(state.copyWith(name: e.value)));
-    on<ReportNationalityChanged>((e, emit) =>
-        emit(state.copyWith(nationality: e.value)));
+    on<ReportNameChanged>((e, emit) => emit(state.copyWith(name: e.value)));
+    on<ReportNationalityChanged>(
+        (e, emit) => emit(state.copyWith(nationality: e.value)));
     on<ReportBirthDateChanged>((e, emit) => e.value == null
         ? emit(state.copyWith(clearBirthDate: true))
         : emit(state.copyWith(birthDate: e.value)));
     on<ReportLastSeenDateChanged>((e, emit) => e.value == null
         ? emit(state.copyWith(clearLastSeenDate: true))
         : emit(state.copyWith(lastSeenDate: e.value)));
-    on<ReportLastLocationChanged>((e, emit) =>
-        emit(state.copyWith(lastSeenLocation: e.value)));
-    on<ReportSexChanged>((e, emit) =>
-        emit(state.copyWith(sex: e.value)));
-    on<ReportHeightChanged>((e, emit) =>
-        emit(state.copyWith(height: e.value)));
-    on<ReportFactsChanged>((e, emit) =>
-        emit(state.copyWith(facts: e.value)));
+    on<ReportLastLocationChanged>(
+        (e, emit) => emit(state.copyWith(lastSeenLocation: e.value)));
+    on<ReportSexChanged>((e, emit) => emit(state.copyWith(sex: e.value)));
+    on<ReportHeightChanged>((e, emit) => emit(state.copyWith(height: e.value)));
+    on<ReportFactsChanged>((e, emit) => emit(state.copyWith(facts: e.value)));
     on<ReportPhotoAdded>(_onPhotoAdded);
     on<ReportPhotoRemoved>(_onPhotoRemoved);
     on<ReportSubmitted>(_onSubmitted);
@@ -50,8 +46,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     ));
   }
 
-  void _onPhotoRemoved(
-      ReportPhotoRemoved event, Emitter<ReportState> emit) {
+  void _onPhotoRemoved(ReportPhotoRemoved event, Emitter<ReportState> emit) {
     final updated = List<String>.from(state.localPhotoPaths)
       ..removeAt(event.index);
     emit(state.copyWith(localPhotoPaths: updated));
@@ -67,8 +62,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       return;
     }
 
-    emit(state.copyWith(
-        status: ReportStatus.loading, showErrors: false));
+    emit(state.copyWith(status: ReportStatus.loading, showErrors: false));
 
     final entity = _buildEntity();
     final (_, failure) = await _reportMissingPerson(
@@ -86,8 +80,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
       return;
     }
 
-    emit(state.copyWith(
-        status: ReportStatus.success, clearError: true));
+    emit(state.copyWith(status: ReportStatus.success, clearError: true));
   }
 
   MissingPersonEntity _buildEntity() {

@@ -1,10 +1,18 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/app.dart';
 import 'core/di/injection.dart';
-import 'firebase_options.dart';
+
+/// ── Supabase credentials ──────────────────────────────────────
+/// 1. Create a free project at https://supabase.com
+/// 2. Go to Project Settings → API
+/// 3. Copy "Project URL" and "anon public" key below
+/// 4. Run the SQL schema in supabase/schema.sql via the SQL editor
+const _supabaseUrl = 'https://vzmtwnqapyvrigeygpse.supabase.co';
+const _supabaseAnonKey =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6bXR3bnFhcHl2cmlnZXlncHNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDk4NjIsImV4cCI6MjA5MDE4NTg2Mn0.gPQbri7Hil4qa6UOpAR9b-XfEfm3sYokZKVA6hX9ZwU';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,11 +29,12 @@ void main() async {
     ),
   );
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  await Supabase.initialize(
+    url: _supabaseUrl,
+    anonKey: _supabaseAnonKey,
   );
 
-  await configureDependencies(withFirebase: true);
+  await configureDependencies();
   await configureSharedServices();
 
   runApp(const App());

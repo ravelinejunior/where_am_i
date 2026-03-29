@@ -26,13 +26,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     add(const AuthStarted());
   }
 
-  Future<void> _onStarted(
-    AuthStarted event,
-    Emitter<AuthState> emit,
-  ) async {
-    _authSub = _repository.authStateChanges.listen(
-      (user) => add(AuthUserChanged(user)),
-    );
+  Future<void> _onStarted(AuthStarted event, Emitter<AuthState> emit) async {
+    // Check if already signed in
+    final current = _repository.currentUser;
+    if (current != null) {
+      emit(state.copyWith(status: AuthStatus.authenticated, user: current));
+    }
+    _authSub = _repository.authStateChanges
+        .listen((user) => add(AuthUserChanged(user)));
   }
 
   void _onUserChanged(AuthUserChanged event, Emitter<AuthState> emit) {
@@ -46,98 +47,65 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onGoogleSignIn(
-    AuthGoogleSignInRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+      AuthGoogleSignInRequested event, Emitter<AuthState> emit) async {
     emit(state.copyWith(status: AuthStatus.loading));
     final (user, failure) = await _repository.signInWithGoogle();
     if (failure != null) {
       emit(state.copyWith(
-        status: AuthStatus.unauthenticated,
-        errorMessage: failure.message,
-      ));
+          status: AuthStatus.unauthenticated, errorMessage: failure.message));
       return;
     }
     emit(state.copyWith(
-      status: AuthStatus.authenticated,
-      user: user,
-      clearError: true,
-    ));
+        status: AuthStatus.authenticated, user: user, clearError: true));
   }
 
   Future<void> _onEmailSignIn(
-    AuthEmailSignInRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+      AuthEmailSignInRequested event, Emitter<AuthState> emit) async {
     emit(state.copyWith(status: AuthStatus.loading));
     final (user, failure) = await _repository.signInWithEmailAndPassword(
-      email: event.email,
-      password: event.password,
-    );
+        email: event.email, password: event.password);
     if (failure != null) {
       emit(state.copyWith(
-        status: AuthStatus.unauthenticated,
-        errorMessage: failure.message,
-      ));
+          status: AuthStatus.unauthenticated, errorMessage: failure.message));
       return;
     }
     emit(state.copyWith(
-      status: AuthStatus.authenticated,
-      user: user,
-      clearError: true,
-    ));
+        status: AuthStatus.authenticated, user: user, clearError: true));
   }
 
   Future<void> _onEmailSignUp(
-    AuthEmailSignUpRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+      AuthEmailSignUpRequested event, Emitter<AuthState> emit) async {
     emit(state.copyWith(status: AuthStatus.loading));
-    final (user, failure) =
-        await _repository.createUserWithEmailAndPassword(
-      email: event.email,
-      password: event.password,
-      displayName: event.displayName,
-    );
+    final (user, failure) = await _repository.createUserWithEmailAndPassword(
+        email: event.email,
+        password: event.password,
+        displayName: event.displayName);
     if (failure != null) {
       emit(state.copyWith(
-        status: AuthStatus.unauthenticated,
-        errorMessage: failure.message,
-      ));
+          status: AuthStatus.unauthenticated, errorMessage: failure.message));
       return;
     }
     emit(state.copyWith(
-      status: AuthStatus.authenticated,
-      user: user,
-      clearError: true,
-    ));
+        status: AuthStatus.authenticated, user: user, clearError: true));
   }
 
   Future<void> _onPasswordReset(
-    AuthPasswordResetRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+      AuthPasswordResetRequested event, Emitter<AuthState> emit) async {
     emit(state.copyWith(status: AuthStatus.loading));
-    final (_, failure) =
-        await _repository.sendPasswordResetEmail(event.email);
+    final (_, failure) = await _repository.sendPasswordResetEmail(event.email);
     if (failure != null) {
       emit(state.copyWith(
-        status: AuthStatus.unauthenticated,
-        errorMessage: failure.message,
-      ));
+          status: AuthStatus.unauthenticated, errorMessage: failure.message));
       return;
     }
     emit(state.copyWith(
-      status: AuthStatus.unauthenticated,
-      successMessage: 'Password reset email sent.',
-      clearError: true,
-    ));
+        status: AuthStatus.unauthenticated,
+        successMessage: 'Password reset email sent.',
+        clearError: true));
   }
 
   Future<void> _onSignOut(
-    AuthSignOutRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+      AuthSignOutRequested event, Emitter<AuthState> emit) async {
     await _repository.signOut();
     emit(const AuthState());
   }

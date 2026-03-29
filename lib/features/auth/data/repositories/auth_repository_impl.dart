@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import '../datasources/firebase_auth_datasource.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import '../datasources/supabase_auth_datasource.dart';
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/i_auth_repository.dart';
 import '../../../../core/error/failures.dart';
@@ -10,12 +10,11 @@ class AuthRepositoryImpl implements IAuthRepository {
   const AuthRepositoryImpl(this._datasource);
 
   @override
-  AppUser? get currentUser =>
-      _mapUser(_datasource.currentFirebaseUser);
+  AppUser? get currentUser => _mapUser(_datasource.currentUser);
 
   @override
-  Stream<AppUser?> get authStateChanges =>
-      _datasource.authStateChanges.map(_mapUser);
+  Stream<AppUser?> get authStateChanges => _datasource.authStateChanges
+      .map((state) => _mapUser(state.session?.user));
 
   @override
   Future<(AppUser?, Failure?)> signInWithGoogle() async {
@@ -35,8 +34,8 @@ class AuthRepositoryImpl implements IAuthRepository {
     required String password,
   }) async {
     try {
-      final user = await _datasource.signInWithEmailAndPassword(
-          email, password);
+      final user =
+          await _datasource.signInWithEmailAndPassword(email, password);
       return (_mapUser(user), null);
     } on AuthException catch (e) {
       return (null, AuthFailure(e.message));
@@ -54,7 +53,7 @@ class AuthRepositoryImpl implements IAuthRepository {
     try {
       final user = await _datasource.createUserWithEmailAndPassword(
           email, password, displayName);
-      return (_mapUser(user), null);
+      return (_mapUser(user.user), null);
     } on AuthException catch (e) {
       return (null, AuthFailure(e.message));
     } catch (e) {
@@ -77,13 +76,16 @@ class AuthRepositoryImpl implements IAuthRepository {
   @override
   Future<void> signOut() => _datasource.signOut();
 
-  AppUser? _mapUser(User? user) {
+  AppUser? _mapUser(sb.User? user) {
     if (user == null) return null;
+    final meta = user.userMetadata ?? {};
     return AppUser(
-      uid: user.uid,
+      uid: user.id,
       email: user.email,
-      displayName: user.displayName,
-      photoUrl: user.photoURL,
+      displayName: meta['display_name'] as String? ??
+          meta['full_name'] as String? ??
+          meta['name'] as String?,
+      photoUrl: meta['avatar_url'] as String?,
     );
   }
 }

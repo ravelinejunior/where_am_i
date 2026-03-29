@@ -3,19 +3,20 @@ import '../../domain/repositories/i_missing_person_repository.dart';
 import '../../domain/value_objects/missing_person_filter.dart';
 import '../../domain/value_objects/paginated_result.dart';
 import '../datasources/interpol_remote_datasource.dart';
-import '../datasources/firestore_remote_datasource.dart';
+import '../datasources/supabase_remote_datasource.dart';
 import '../../../../core/enums/enums.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/failures.dart';
 
 class MissingRepositoryImpl implements IMissingPersonRepository {
   final IInterpolRemoteDatasource _interpol;
-  final IFirestoreRemoteDatasource _firestore;
+  final IFirestoreRemoteDatasource _supabase;
 
   const MissingRepositoryImpl({
     required IInterpolRemoteDatasource interpol,
     required IFirestoreRemoteDatasource firestore,
   })  : _interpol = interpol,
-        _firestore = firestore;
+        _supabase = firestore;
 
   @override
   Future<(PaginatedResult<MissingPersonEntity>?, Failure?)> getMissingPersons({
@@ -24,46 +25,34 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
     final results = <MissingPersonEntity>[];
     Failure? lastFailure;
 
-    // Determine which sources to query
     final fetchInterpol = filter.sources.contains(MissingPersonSource.interpol);
-    final fetchFirestore =
-        filter.sources.contains(MissingPersonSource.firebase);
+    final fetchSupabase = filter.sources.contains(MissingPersonSource.firebase);
 
-    // Query both in parallel where possible
     final futures = await Future.wait([
       if (fetchInterpol) _fetchInterpol(filter) else Future.value(null),
-      if (fetchFirestore) _fetchFirestore(filter) else Future.value(null),
+      if (fetchSupabase) _fetchSupabase(filter) else Future.value(null),
     ]);
 
     final interpolResult = fetchInterpol ? futures[0] : null;
-    final firestoreResult =
-        fetchFirestore ? futures[fetchInterpol ? 1 : 0] : null;
+    final supabaseResult =
+        fetchSupabase ? futures[fetchInterpol ? 1 : 0] : null;
 
     if (interpolResult != null) {
       final (entities, failure) = interpolResult;
       if (entities != null) results.addAll(entities);
       if (failure != null) lastFailure = failure;
     }
-
-    if (firestoreResult != null) {
-      final (entities, failure) = firestoreResult;
+    if (supabaseResult != null) {
+      final (entities, failure) = supabaseResult;
       if (entities != null) results.addAll(entities);
       if (failure != null && lastFailure == null) lastFailure = failure;
     }
 
-    // If both sources failed, surface the error
-    if (results.isEmpty && lastFailure != null) {
-      return (null, lastFailure);
-    }
+    if (results.isEmpty && lastFailure != null) return (null, lastFailure);
 
-    // Deduplicate by id
     final seen = <String>{};
     final unique = results.where((e) => seen.add(e.id)).toList();
-
-    // Apply client-side sort after merge
     _sort(unique, filter.sortOrder);
-
-    // Apply client-side text search if query present
     final filtered = _applySearch(unique, filter.searchQuery);
 
     return (
@@ -71,7 +60,6 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
         items: filtered,
         currentPage: filter.page,
         pageSize: filter.pageSize,
-        totalCount: null, // Exact total unknown after merge
       ),
       null,
     );
@@ -87,7 +75,7 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
         final model = await _interpol.getYellowNoticeDetail(id);
         return (model.toEntity(), null);
       } else {
-        final model = await _firestore.getCaseDetail(id);
+        final model = await _supabase.getCaseDetail(id);
         return (model.toEntity(), null);
       }
     } on ServerException catch (e) {
@@ -108,10 +96,11 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
     required MissingPersonEntity person,
     required List<String> localPhotoPaths,
   }) async {
-    // TODO: inject current user ID from AuthRepository in commit #10
-    const userId = 'anonymous';
+    // Get real user ID from Supabase auth session
+    // reported_by is nullable in DB — allow unauthenticated reports (pending review)
+    final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
     try {
-      final model = await _firestore.createCase(
+      final model = await _supabase.createCase(
         entity: person,
         userId: userId,
         localPhotoPaths: localPhotoPaths,
@@ -132,7 +121,7 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
     required CaseStatus status,
   }) async {
     try {
-      await _firestore.updateCaseStatus(id: firestoreId, status: status);
+      await _supabase.updateCaseStatus(id: firestoreId, status: status);
       return (true, null);
     } on ServerException catch (e) {
       return (false, ServerFailure(message: e.message));
@@ -144,7 +133,7 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
   @override
   Future<(List<MissingPersonEntity>, Failure?)> getPendingCases() async {
     try {
-      final models = await _firestore.getPendingCases();
+      final models = await _supabase.getPendingCases();
       return (models.map((m) => m.toEntity()).toList(), null);
     } on ServerException catch (e) {
       return (<MissingPersonEntity>[], ServerFailure(message: e.message));
@@ -155,18 +144,14 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
 
   @override
   Stream<MissingPersonEntity?> watchCase(String firestoreId) {
-    return _firestore.watchCase(firestoreId).map((model) => model?.toEntity());
+    return _supabase.watchCase(firestoreId).map((model) => model?.toEntity());
   }
 
-  // --- Private helpers ---
-
   Future<(List<MissingPersonEntity>?, Failure?)> _fetchInterpol(
-    MissingPersonFilter filter,
-  ) async {
+      MissingPersonFilter filter) async {
     try {
       final response = await _interpol.getYellowNotices(filter: filter);
-      final entities = response.notices.map((n) => n.toEntity()).toList();
-      return (entities, null);
+      return (response.notices.map((n) => n.toEntity()).toList(), null);
     } on ServerException catch (e) {
       return (
         null,
@@ -179,13 +164,11 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
     }
   }
 
-  Future<(List<MissingPersonEntity>?, Failure?)> _fetchFirestore(
-    MissingPersonFilter filter,
-  ) async {
+  Future<(List<MissingPersonEntity>?, Failure?)> _fetchSupabase(
+      MissingPersonFilter filter) async {
     try {
-      final models = await _firestore.getCases(filter: filter);
-      final entities = models.map((m) => m.toEntity()).toList();
-      return (entities, null);
+      final models = await _supabase.getCases(filter: filter);
+      return (models.map((m) => m.toEntity()).toList(), null);
     } on ServerException catch (e) {
       return (null, ServerFailure(message: e.message));
     } on NetworkException catch (e) {
@@ -199,15 +182,15 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
     switch (order) {
       case SortOrder.newestFirst:
         items.sort((a, b) {
-          final dateA = a.lastSeenDate ?? a.createdAt ?? DateTime(1970);
-          final dateB = b.lastSeenDate ?? b.createdAt ?? DateTime(1970);
-          return dateB.compareTo(dateA);
+          final da = a.lastSeenDate ?? a.createdAt ?? DateTime(1970);
+          final db = b.lastSeenDate ?? b.createdAt ?? DateTime(1970);
+          return db.compareTo(da);
         });
       case SortOrder.oldestFirst:
         items.sort((a, b) {
-          final dateA = a.lastSeenDate ?? a.createdAt ?? DateTime(1970);
-          final dateB = b.lastSeenDate ?? b.createdAt ?? DateTime(1970);
-          return dateA.compareTo(dateB);
+          final da = a.lastSeenDate ?? a.createdAt ?? DateTime(1970);
+          final db = b.lastSeenDate ?? b.createdAt ?? DateTime(1970);
+          return da.compareTo(db);
         });
       case SortOrder.nameAZ:
         items.sort((a, b) => a.name.compareTo(b.name));
@@ -217,9 +200,7 @@ class MissingRepositoryImpl implements IMissingPersonRepository {
   }
 
   List<MissingPersonEntity> _applySearch(
-    List<MissingPersonEntity> items,
-    String? query,
-  ) {
+      List<MissingPersonEntity> items, String? query) {
     if (query == null || query.trim().isEmpty) return items;
     final q = query.toLowerCase().trim();
     return items.where((e) {

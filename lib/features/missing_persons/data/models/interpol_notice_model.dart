@@ -359,6 +359,7 @@ class InterpolNoticeModel {
       '[BROH]': 'Brown',
       '[GRYH]': 'Grey',
       '[OTHL]': 'Other',
+      '[OTHD]': 'Other',
       // Languages (also used via this helper)
       'ENG': 'English',
       'FRE': 'French',
