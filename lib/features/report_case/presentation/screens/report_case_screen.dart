@@ -221,7 +221,7 @@ class _FormBodyState extends State<_FormBody> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.info_outline_rounded,
+                const Icon(Icons.info_outline_rounded,
                     size: 16, color: AppColors.pendingBadgeText),
                 const SizedBox(width: 10),
                 Expanded(
@@ -502,7 +502,7 @@ class _SuccessSheet extends StatelessWidget {
           Container(
             width: 64,
             height: 64,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.communityBadge,
               shape: BoxShape.circle,
             ),

@@ -108,8 +108,9 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
   }
 
   String _mapFailure(Failure failure) {
-    if (failure is NetworkFailure)
+    if (failure is NetworkFailure) {
       return 'Sem conexão. Verifique sua internet.';
+    }
     if (failure is AuthFailure) return 'Você precisa estar conectado.';
     return 'Algo deu errado. Tente novamente.';
   }

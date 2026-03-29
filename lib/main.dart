@@ -41,9 +41,6 @@ void main() async {
       dotenv.env['SUPABASE_URL'] ?? 'https://vzmtwnqapyvrigeygpse.supabase.co';
   final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 
-  debugPrint('supabaseUrl = $supabaseUrl');
-  debugPrint('supabaseAnonKey = $supabaseAnonKey');
-
   await Supabase.initialize(
     url: supabaseUrl,
     anonKey: supabaseAnonKey,

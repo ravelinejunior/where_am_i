@@ -41,7 +41,7 @@ class SupabaseRemoteDatasource implements IFirestoreRemoteDatasource {
     try {
       // Single simple query — client-side filter for sex/nationality
       // to avoid needing composite indexes
-      var query = _client
+      final query = _client
           .from(_table)
           .select()
           .eq('status', 'approved')
